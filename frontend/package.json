@@ -1,0 +1,36 @@
+{
+  "name": "inventomania",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.18.0",
+    "chart.js": "^2.8.0",
+    "filepond": "^4.2.0",
+    "filepond-plugin-image-exif-orientation": "^1.0.4",
+    "filepond-plugin-image-preview": "^4.0.3",
+    "jquery": "^3.3.1",
+    "materialize-css": "^1.0.0-rc.2",
+    "react": "^16.8.4",
+    "react-chartjs-2": "^2.7.4",
+    "react-dom": "^16.8.4",
+    "react-filepond": "^7.0.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "2.1.8",
+    "tabulator": "^0.2.40"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
