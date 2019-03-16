@@ -132,7 +132,7 @@ class ScriptBuilder extends React.Component {
                         }
                         }
                     >
-                        <DiagramWidget diagramEngine={this.engine} />
+                        <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} />
                     </div>
                 </div>
             </div>

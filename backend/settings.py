@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '139.59.37.82', '2ffa8748.ngrok.io']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '139.59.37.82', '6b5e413b.ngrok.io']
 
 
 # Application definition
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'accounts',
     'excel',
     'corsheaders',
+    'scriptbuilder',
 ]
 
 MIDDLEWARE = [

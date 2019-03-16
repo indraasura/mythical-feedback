@@ -21,6 +21,7 @@ from backend import settings
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^excel/', include('excel.urls')),
+    url(r'^builder/', include('scriptbuilder.urls')),
 ]
 
 if settings.DEBUG:
