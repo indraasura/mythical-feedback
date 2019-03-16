@@ -1,0 +1,32 @@
+.srd-diagram {
+    height: 100vh;
+    background-color: black;
+}
+
+header, main, footer {
+    padding-left: 300px;
+}
+
+@media only screen and (max-width : 992px) {
+    header, main, footer {
+        padding-left: 0;
+    }
+}
+
+.somePadding {
+    padding-left: 500px;
+}
+
+.fixedGenerate {
+    position: fixed;
+    top: 20;
+    right: 0;
+    padding: 30px;
+    z-index: 999;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+}

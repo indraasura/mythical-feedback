@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import Main from './components/main'
-import Footer from './components/footer'
-import ExcelData from './components/exceldata'
+import Main from './components/main';
+import Footer from './components/footer';
+import ExcelData from './components/exceldata';
+import ScriptBuilder from './components/ScriptBuilder';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import M from 'materialize-css'
 import './App.css'
 
 class App extends Component {
-    state = {  }
+    state = {  };
     componentDidMount(){
         M.AutoInit()
     }
@@ -20,6 +21,7 @@ class App extends Component {
                             <ul id="nav-mobile" className="right hide-on-med-and-down">
                                 <li><Link to={'/'}>Home</Link></li>
                                 <li><Link to={'/excel'}>View Sheet</Link></li>
+                                <li><Link to={'/script-builder'}>Script Builder</Link></li>
                                 <li><Link to={'/contact'}>Contact Us</Link></li>
                             </ul>
                         </div>
@@ -28,6 +30,7 @@ class App extends Component {
                         <Route exact path='/' component={Main} />
                         <Route path='/about' component={Main} />
                         <Route path='/excel' component={ExcelData} />
+                        <Route path='/script-builder' component={ScriptBuilder} />
                     </Switch>
                     {/*<Footer />*/}
                 </div>
