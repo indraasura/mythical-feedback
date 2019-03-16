@@ -44,11 +44,8 @@ class ExcelFileView(APIView):
             sheet = wb.sheet_by_index(0)
             json_data = {'filename': file_model.excel_file.name, 'heading': sheet.row_values(0), 'data': []}
             for i in range(1, sheet.nrows):
-                temp = {}
                 row_value = sheet.row_values(i)
-                for j in range(len(row_value)):
-                    temp[json_data['heading'][j]] = row_value[j]
-                json_data['data'].append(temp)
+                json_data['data'].append(row_value)
             return Response(json_data)
         else:
             return Response({'status': 400, 'message': 'Bad Request'}, status=status.HTTP_400_BAD_REQUEST)

@@ -29,7 +29,7 @@ class App extends Component {
                         <Route path='/about' component={Main} />
                         <Route path='/excel' component={ExcelData} />
                     </Switch>
-                    <Footer />
+                    {/*<Footer />*/}
                 </div>
             </Router>
          );

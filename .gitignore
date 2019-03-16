@@ -20,3 +20,5 @@ myvenv
 .env
 env
 media
+node_modules
+.idea

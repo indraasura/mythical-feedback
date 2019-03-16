@@ -1,57 +1,88 @@
 import React, { Component } from 'react';
 import M from 'materialize-css';
 import Data from '../data.json'
+import './exceldata.css';
 
 
+const TableRow = props => (
+    <tr>
+        {props.data.map((item, index) => {
+            return (
+        <td className="" id={index}>{item}</td>
+            )
+    })}
+        {/*<td className = "card green lighten-4" style = {{width: '8%'}}><button className = "btn green darken-3 white-text waves-effect"> <i className="material-icons">call</i></button></td>*/}
+    </tr>
+);
+
+const TableHeader = props => (
+    <tr>
+        {props.data.map((item, index) => {
+            return (
+                <th className = "">{item}</th>
+            )
+        })}
+    </tr>
+);
+
+const TableBody = props => (
+    <tbody>
+    {props.data['data'].map((dataDetail, index)=>{
+            return (
+                <TableRow data={dataDetail}/>
+            )
+        })}
+    </tbody>
+);
 
 class ExcelData extends Component {
     state = { 
-        data:[]
+        excel_json: false
      }
     componentWillMount(){
-        fetch('https://2ffa8748.ngrok.io/')
+        fetch('https://2ffa8748.ngrok.io/excel/get/?id=3&filename=Technical_Club_Responses.xlsx')
             .then(res=>res.json())
             .then(data=>{
-                console.log(data)
-                this.setState(data)
+                console.log(data);
+                this.setState({
+                    excel_json: data
+                });
             })
+        console.log(this.state.excel_json)
     }
 
     componentDidMount(){
         M.AutoInit()
     }
-    render() { 
+    render() {
+        console.log('asdasd', this.state.excel_json, !this.state.excel_json);
+        if (!this.state.excel_json) {
+            console.log('YES');
+            return (
+                <div className="preloader-wrapper big active center-loader loader">
+                    <div className="spinner-layer spinner-blue-only">
+                        <div className="circle-clipper left">
+                            <div className="circle"></div>
+                        </div>
+                        <div className="gap-patch">
+                            <div className="circle"></div>
+                        </div>
+                        <div className="circle-clipper right">
+                            <div className="circle"></div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        // const rowCount = this.state['data'][0].length;
         return ( 
             <div>
-                <table className = "centered responsive-table" id = "data-table">
+                <table className = "striped highlight centered responsive-table" id = "data-table">
                     <thead>
-                        <tr>
-                            <th className = "card blue darken-3 white-text" style = {{width:'23%'}}>Name</th>
-                            <th className = "card orange darken-3 white-text" style = {{width:'23%'}}>Email</th>
-                            <th className = "card red darken-3 white-text" style = {{width:'23%'}}>Year</th>
-                            <th className = "card purple darken-3 white-text" style = {{width:'23%'}}>Languages known</th>
-                            <th className = "card green darken-3 white-text" style = {{width: '8%'}}>Call</th>
-                        </tr>
+                            <TableHeader data={this.state.excel_json['heading']}/>
                     </thead>
+                        <TableBody data={this.state.excel_json}/>
                 </table>
-                {Data.map((dataDetail, index)=>{
-                    return (
-                        <table className = "centered responsive-table">
-                            <thead>
-                               
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td className = "card blue lighten-3" style = {{width:'23%'}}>{dataDetail.Name}</td>
-                                    <td className = "card orange lighten-3" style = {{width:'23%'}}>{dataDetail.Email}</td>
-                                    <td className = "card red lighten-3" style = {{width:'23%'}}>{dataDetail.Year}</td>
-                                    <td className = "card purple lighten-3" style = {{width:'23%'}}>{dataDetail.Languages}</td>
-                                    <td className = "card green lighten-4" style = {{width: '8%'}}><button className = "btn green darken-3 white-text waves-effect"> <i class="material-icons">call</i></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    )
-                })}
             </div>
          );
     }
