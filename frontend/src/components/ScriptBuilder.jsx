@@ -16,11 +16,8 @@ import M from "materialize-css";
 import "materialize-css/dist/css/materialize.min.css";
 import CallButton from "./CallButton";
 
-const Modal = props => (
-    <>
+const ShareToast ='<textarea style="font-size:12px;" rows="8" cols="80" id="textarea2" class="materialize-textarea" data-length="120">Random value</textarea>';
 
-    </>
-);
 
 class ScriptBuilder extends React.Component {
     static defaultProps = {
@@ -40,6 +37,7 @@ class ScriptBuilder extends React.Component {
         this.engine = new DiagramEngine();
         this.engine.registerNodeFactory(new DefaultNodeFactory());
         this.engine.registerLinkFactory(new DefaultLinkFactory());
+        M.toast({html: ShareToast});
     }
 
     generateJson() {
@@ -60,15 +58,24 @@ class ScriptBuilder extends React.Component {
         }).then(response => response.json())
             .then(response => {
                 console.log(response);
-                this.setState({
-                    surveyId: response.id
-                })
+                if (response.status == 500) {
+                    return
+                } else {
+                    this.setState({
+                        surveyId: response.id
+                    })
+                }
             });
-        console.log(this.engine.getDiagramModel().serializeDiagram());
         setTimeout(() => { this.setState({
             isLoading: false
         });
-        document.getElementById("generate-button").style.backgroundColor = "#4caf50"; }, 3000);
+        if (this.state.surveyId != '') {
+            console.log(this.engine.getDiagramModel().serializeDiagram());
+                document.getElementById("generate-button").style.backgroundColor = "#4caf50";
+        } else {
+            document.getElementById("generate-button").style.backgroundColor = "#f44336";
+        }
+        }, 3000);
     }
 
     handleInput() {

@@ -77,6 +77,7 @@ class ExcelData extends Component {
         // const rowCount = this.state['data'][0].length;
         return ( 
             <div>
+                <h3>Found data: 32</h3>
                 <table className = "striped highlight centered responsive-table" id = "data-table">
                     <thead>
                             <TableHeader data={this.state.excel_json['heading']}/>
