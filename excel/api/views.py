@@ -1,4 +1,6 @@
-from rest_framework import status
+from rest_framework import status, generics
+from rest_framework.filters import OrderingFilter
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,6 +11,20 @@ import xlrd
 from django.conf import settings
 
 media_root = settings.MEDIA_ROOT + '/'
+
+
+class ExcelFileAPIView(generics.ListCreateAPIView):
+    """
+
+    """
+    serializer_class = ExcelFileSerializer
+    permission_classes = ()
+    filter_backends = [OrderingFilter]
+    pagination_class = LimitOffsetPagination
+
+    def get_queryset(self):
+        qs = ExcelFile.objects.all()
+        return qs
 
 
 class ExcelFileUploadView(APIView):

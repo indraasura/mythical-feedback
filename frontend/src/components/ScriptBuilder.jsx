@@ -37,6 +37,17 @@ class ScriptBuilder extends React.Component {
     }
 
     generateJson() {
+        fetch('http://127.0.0.1:8000/builder/upload/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: 'Random Name',
+                script_flow: this.engine.getDiagramModel().serializeDiagram(),
+            })
+        });
         console.log(this.engine.getDiagramModel().serializeDiagram());
     }
 
@@ -70,7 +81,11 @@ class ScriptBuilder extends React.Component {
                         </div>
                     </div>
                     <a className="waves-effect waves-light btn-large"
-                       onClick={() => { this.generateJson()}}><i className="material-icons right">cloud</i>Generate</a>
+                       onClick={() => { this.generateJson()}}>
+                        <div className="progress button-progress">
+                            <div className="indeterminate"></div>
+                        </div>
+                        <i className="material-icons right">cloud</i>Generate</a>
                 </div>
                 <div className="content">
                     <Sidebar />

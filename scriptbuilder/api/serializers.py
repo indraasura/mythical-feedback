@@ -24,4 +24,11 @@ class ScriptBuilderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ScriptBuilder
-        fields = ('name', 'script_flow', 'timestamp')
+        fields = ('id', 'name', 'script_flow', 'timestamp')
+
+
+class ScriptBuilderViewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ScriptBuilder
+        fields = ('id', 'name', 'timestamp')

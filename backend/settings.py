@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '139.59.37.82', '6b5e413b.ngrok.io']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '139.59.37.82', '81d5a3fa.ngrok.io']
 
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'excel',
     'corsheaders',
     'scriptbuilder',
+    'autocall',
 ]
 
 MIDDLEWARE = [
@@ -164,4 +165,6 @@ JWT_AUTH = {
 }
 
 AUTH_USER_MODEL = 'accounts.User'
-APPEND_SLASH=False
+APPEND_SLASH = False
+ACCOUNT_SID = config("ACCOUNT_SID")
+AUTH_TOKEN = config("AUTH_TOKEN")

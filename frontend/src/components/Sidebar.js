@@ -3,6 +3,7 @@ import M from "materialize-css/dist/js/materialize.min.js";
 import "materialize-css/dist/css/materialize.min.css";
 import TrayWidget from './TrayWidget';
 import TrayItemWidget from './TrayItemWidget';
+import './sidenav.css';
 class Sidebar extends Component {
     componentDidMount() {
         var elem = document.querySelector(".sidenav");
@@ -15,7 +16,7 @@ class Sidebar extends Component {
     render() {
         return (
             <div>
-                <ul id="slide-out" className="sidenav sidenav-fixed">
+                <ul id="slide-out" className="sidenav sidenav-fixed card-look-side-nav">
                     <li>
                         <div className="user-view">
                             <div className="background grey">
