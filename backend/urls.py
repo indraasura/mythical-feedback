@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^excel/', include('excel.urls')),
     url(r'^builder/', include('scriptbuilder.urls')),
+    url(r'^autocall/', include('autocall.urls')),
 ]
 
 if settings.DEBUG:

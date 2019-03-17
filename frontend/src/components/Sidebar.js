@@ -17,22 +17,12 @@ class Sidebar extends Component {
         return (
             <div>
                 <ul id="slide-out" className="sidenav sidenav-fixed card-look-side-nav">
-                    <li>
-                        <div className="user-view">
-                            <div className="background grey">
-                                <img src="" />
-                            </div>
-                            <a href=""><img className="circle" src="http://chittagongit.com//images/user-icon-image/user-icon-image-2.jpg" /></a>
-                            <a href=""><span className="white-text name">Shashank Sharma</span></a>
-                            <a href=""><span className="white-text email">jdandturk@gmail.com</span></a>
-                        </div>
-                    </li>
-                    <li><a className="subheader">Tray</a></li>
+                    <li><a className="subheader">Tray (Drag and drop)</a></li>
                     <li>
                         <TrayWidget>
-                            <TrayItemWidget model={{ type: 'in' }} name="In Node" color="peru" />
-                            <TrayItemWidget model={{ type: 'out' }} name="Out Node" color="hotpink" />
-                            <TrayItemWidget model={{ type: 'out-in' }} name="OutIN Node" color="hotpink" />
+                            <TrayItemWidget model={{ type: 'in' }} name="End Node" color="peru" />
+                            <TrayItemWidget model={{ type: 'out' }} name="Source Node" color="hotpink" />
+                            <TrayItemWidget model={{ type: 'out-in' }} name="Middle Node" color="hotpink" />
                         </TrayWidget>
                     </li>
                 </ul>

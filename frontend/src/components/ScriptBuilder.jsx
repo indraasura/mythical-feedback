@@ -14,6 +14,7 @@ import Sidebar from './Sidebar'
 // import Modal from "./Modal";
 import M from "materialize-css";
 import "materialize-css/dist/css/materialize.min.css";
+import CallButton from "./CallButton";
 
 const Modal = props => (
     <>
@@ -28,15 +29,24 @@ class ScriptBuilder extends React.Component {
     state = {
         input_text: '',
         iid: '',
-    }
-    engine = new DiagramEngine();
+        isLoading: false,
+        callButtonValue: '',
+        surveyId: '',
+        engine: '',
+        responseId: '',
+    };
 
     componentWillMount() {
+        this.engine = new DiagramEngine();
         this.engine.registerNodeFactory(new DefaultNodeFactory());
         this.engine.registerLinkFactory(new DefaultLinkFactory());
     }
 
     generateJson() {
+        this.setState({
+            isLoading: true
+        });
+        console.log(this.state);
         fetch('http://127.0.0.1:8000/builder/upload/', {
             method: 'POST',
             headers: {
@@ -47,16 +57,84 @@ class ScriptBuilder extends React.Component {
                 name: 'Random Name',
                 script_flow: this.engine.getDiagramModel().serializeDiagram(),
             })
-        });
+        }).then(response => response.json())
+            .then(response => {
+                console.log(response);
+                this.setState({
+                    surveyId: response.id
+                })
+            });
         console.log(this.engine.getDiagramModel().serializeDiagram());
+        setTimeout(() => { this.setState({
+            isLoading: false
+        });
+        document.getElementById("generate-button").style.backgroundColor = "#4caf50"; }, 3000);
     }
 
     handleInput() {
         // let iid = this.engine.getDiagramModel().serializeDiagram().nodes[0].id;
         const iid = this.state.iid;
-        this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
-        document.getElementById('question_text').value = '';
-        this.engine.repaintCanvas();
+        let engineState = this.state.engine.getDiagramModel().serializeDiagram();
+        let counter = 0
+        console.log(iid);
+        console.log(engineState);
+        console.log(engineState.nodes);
+        console.log(engineState.nodes[iid]);
+        if (!engineState.nodes.hasOwnProperty(iid)) {
+            console.log('NOT FOUND');
+            setTimeout(() => {
+                engineState = this.engine.getDiagramModel().serializeDiagram();
+                this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
+                document.getElementById('question_text').value = '';
+                this.engine.repaintCanvas();
+            }, 500)
+        } else {
+            this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
+            document.getElementById('question_text').value = '';
+            this.engine.repaintCanvas();
+        }
+    }
+
+    callHandleInput = (e) => {
+        this.setState({
+            callButtonValue: e.target.value
+        })
+
+    }
+
+    callPhone = () => {
+        console.log('Calling');
+        fetch('http://127.0.0.1:8000/autocall/call/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                to_phonenumber: this.state.callButtonValue,
+                survey: this.state.surveyId,
+            })
+        }).then(response => response.json())
+            .then(response => {
+                console.log(response);
+                this.setState({
+                    responseId: response.id
+                })
+            });
+
+        var timer = setInterval(() => {
+            fetch('http://127.0.0.1:8000/autocall/survey/responses/' + this.state.responseId, {
+                method: 'GET'
+            }).then(response => response.json())
+                .then(response => {
+                    console.log(response.call_status);
+                    if (response.call_status == 'DONE') {
+                        document.getElementById("search").style.background = "#f44336";
+                        document.getElementById("search").classList.remove("call-animation");
+                        clearInterval(timer);
+                    }
+                });
+        }, 2000);
     }
 
     render() {
@@ -80,11 +158,15 @@ class ScriptBuilder extends React.Component {
                             </a>
                         </div>
                     </div>
-                    <a className="waves-effect waves-light btn-large"
-                       onClick={() => { this.generateJson()}}>
-                        <div className="progress button-progress">
+                    <div className={"call-button"}>
+                        <CallButton handleInput={this.callHandleInput} callPhone={this.callPhone}/>
+                    </div>
+                    <a className="waves-effect btn-large" id={"generate-button"}
+                       onClick={() => { this.generateJson()}}
+                        style={{backgroundColor: "#393939"}}>
+                        {this.state.isLoading ? <div className="progress button-progress">
                             <div className="indeterminate"></div>
-                        </div>
+                        </div> : null }
                         <i className="material-icons right">cloud</i>Generate</a>
                 </div>
                 <div className="content">
@@ -92,6 +174,7 @@ class ScriptBuilder extends React.Component {
                     <div
                         className="diagram-layer"
                         onDrop={event => {
+                            console.log('NODE ADDED');
                             var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
                             var nodesCount = Lodash.keys(this.engine.getDiagramModel().getNodes()).length;
                             var node = null;
@@ -110,7 +193,7 @@ class ScriptBuilder extends React.Component {
                             node.x = points.x;
                             node.y = points.y;
                             this.engine.getDiagramModel().addNode(node);
-                            console.log(this.engine.getDiagramModel().serializeDiagram());
+                            console.log('orginal', this.engine.getDiagramModel().serializeDiagram());
                             this.forceUpdate();
                         }}
                         id={"node-" + Lodash.keys(this.engine.getDiagramModel().getNodes()).length + 1}
@@ -123,15 +206,18 @@ class ScriptBuilder extends React.Component {
                             const iid = e.target.offsetParent.attributes[1].nodeValue;
                             this.setState({
                                 iid: iid,
+                                engine: this.engine
+                            }, () => {
+                                let elem = document.getElementById('modal1');
+                                var instance = M.Modal.getInstance(elem);
+                                instance.open();
+                                document.getElementById('question_text').focus();
                             });
 
 
 
 
-                            let elem = document.getElementById('modal1');
-                            var instance = M.Modal.getInstance(elem);
-                            instance.open();
-                            document.getElementById('question_text').focus();
+
 
                             // let iid = this.engine.getDiagramModel().serializeDiagram().nodes[0].id;
 

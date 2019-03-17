@@ -168,3 +168,4 @@ AUTH_USER_MODEL = 'accounts.User'
 APPEND_SLASH = False
 ACCOUNT_SID = config("ACCOUNT_SID")
 AUTH_TOKEN = config("AUTH_TOKEN")
+WEBSITE_URL = 'https://81d5a3fa.ngrok.io/autocall'

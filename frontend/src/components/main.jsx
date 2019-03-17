@@ -11,7 +11,6 @@ class Main extends Component {
     render() { 
         return ( 
             <div>
-                Main content will go here
                 <FileUpload />
                 
             </div>

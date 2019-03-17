@@ -40,7 +40,7 @@ class ExcelData extends Component {
         excel_json: false
      }
     componentWillMount(){
-        fetch('https://2ffa8748.ngrok.io/excel/get/?id=3&filename=Technical_Club_Responses.xlsx')
+        fetch('http://127.0.0.1:8000/excel/get/?id=3&filename=Technical_Club_Responses.xlsx')
             .then(res=>res.json())
             .then(data=>{
                 console.log(data);

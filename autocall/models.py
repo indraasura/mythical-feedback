@@ -14,10 +14,13 @@ class Survey(models.Model):
 class Response(models.Model):
     audio_file = models.FileField()
     transcript = models.TextField(blank=True)
+    question_id = models.CharField(max_length=80)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 
 class SurveyResponse(models.Model):
     survey = models.ForeignKey(Survey)
+    phone_number = models.CharField(max_length=15)
+    call_status = models.CharField(max_length=20, default='NOT')
     responses = models.ManyToManyField(Response)
     timestamp = models.DateTimeField(auto_now_add=True)

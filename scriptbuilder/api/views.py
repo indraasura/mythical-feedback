@@ -53,12 +53,15 @@ class ScriptFlowUploadView(APIView):
                     'data': final_list
                 }
                 script = ScriptBuilder.objects.get(id=script_builder_model['id'])
-                Survey.objects.create(script=script, script_flow=final_data)
+                survey_model = Survey.objects.create(script=script, script_flow=final_data)
+                survey_model.save()
             except:
                 script = ScriptBuilder.objects.get(id=script_builder_model['id'])
                 script.delete()
-                return Response({'status': 500, 'message': "JSON is not valid"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            return Response(script_flow_serializer.data, status=status.HTTP_201_CREATED)
+                return Response({'status': 500, 'message': "JSON is not valid"})
+            return Response({
+                'id': survey_model.id
+            }, status=status.HTTP_201_CREATED)
         else:
             return Response(script_flow_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -12,7 +12,8 @@ export default class TrayWidget extends React.Component<TrayWidgetProps, TrayWid
 
     render() {
         return (
-            <div className="tray row">
+            <div className="tray center"
+                 style={{ padding: "10px" }}>
                 {this.props.children}
             </div>
         );
