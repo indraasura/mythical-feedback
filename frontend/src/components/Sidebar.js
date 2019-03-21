@@ -57,13 +57,7 @@ class Sidebar extends Component {
                         {this.state.builder_json.map((item, index)=>{
                             return (
                                 <a href={"#"} onClick={() => {this.getFileDetails(this.props.changeScript(item.id))}}>
-                                    <div className="card horizontal" style={{margin: "10px"}}>
-                                        <div className="card-stacked">
-                                            <div className="center">
-                                                {item.name}
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div><i className="inline-icon material-icons">insert_chart</i>{item.name}</div>
                                 </a>
                             )
                         })}

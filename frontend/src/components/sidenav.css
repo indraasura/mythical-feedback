@@ -2,3 +2,8 @@
     margin: 20px;
     height: 85%;
 }
+.inline-icon {
+    vertical-align: middle;
+    font-size: 28px !important;
+    padding-right: 10px;
+}

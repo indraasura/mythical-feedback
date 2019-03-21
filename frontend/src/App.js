@@ -12,8 +12,8 @@ class App extends Component {
     componentDidMount(){
         M.AutoInit()
     }
-    render() { 
-        return ( 
+    render() {
+        return (
             <Router>
                 <div>
                     <nav className = "nav-bg">
@@ -38,5 +38,5 @@ class App extends Component {
          );
     }
 }
- 
+
 export default App;

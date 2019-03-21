@@ -43,6 +43,7 @@ class ScriptBuilder extends React.Component {
         this.engine = new DiagramEngine();
         this.engine.registerNodeFactory(new DefaultNodeFactory());
         this.engine.registerLinkFactory(new DefaultLinkFactory());
+        this.engine.installDefaultFactories();
     }
 
     generateJson() {
@@ -156,17 +157,16 @@ class ScriptBuilder extends React.Component {
                 this.setState({
                     sideJSON: data
                 });
-                console.log('are bhai bhai', data);
                 var str = JSON.stringify(data['script_flow']);
-                console.log(str)
-                console.log(JSON.parse(str));
-                var model2 = new DiagramModel();
-                console.log(data['script_flow']);
-                console.log(model2.deSerializeDiagram(JSON.parse(str), this.engine));
-                console.log(model2);
+                console.log(str);
+                let model2 = new DiagramModel();
+                let obj = JSON.parse(str);
+                let node = obj.nodes[0];
+                node.x += 30;
+                node.y += 30;
+                model2.deSerializeDiagram(obj, this.engine);
                 this.engine.setDiagramModel(model2);
-                // this.engine.repaintCanvas();
-                console.log(this.engine.getDiagramModel());
+                this.forceUpdate();
             });
     };
 
