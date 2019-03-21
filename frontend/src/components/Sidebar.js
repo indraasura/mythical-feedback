@@ -50,6 +50,7 @@ class Sidebar extends Component {
                             <TrayItemWidget model={{ type: 'in' }} name="End Node" color="peru" />
                             <TrayItemWidget model={{ type: 'out' }} name="Source Node" color="hotpink" />
                             <TrayItemWidget model={{ type: 'out-in' }} name="Middle Node" color="hotpink" />
+                            <TrayItemWidget model={{ type: 'diamond' }} name="Condition Node" color="hotpink" />
                         </TrayWidget>
                     </li>
                     <li><a className="subheader">Recents</a></li>

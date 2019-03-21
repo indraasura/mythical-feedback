@@ -7,8 +7,14 @@ import {
     DefaultLinkFactory,
     DefaultNodeModel,
     DefaultPortModel,
-    DiagramModel
+    DiagramModel,
 } from 'storm-react-diagrams';
+
+import { DiamondNodeModel } from "./diamond/DiamondNodeModel";
+import { DiamondNodeFactory } from "./diamond/DiamondNodeFactory";
+import { SimplePortFactory } from "./diamond/SimplePortFactory";
+import { DiamondPortModel } from "./diamond/DiamondPortModel";
+
 import 'storm-react-diagrams/dist/style.min.css';
 import './srd.css';
 import Sidebar from './Sidebar'
@@ -44,6 +50,8 @@ class ScriptBuilder extends React.Component {
         this.engine.registerNodeFactory(new DefaultNodeFactory());
         this.engine.registerLinkFactory(new DefaultLinkFactory());
         this.engine.installDefaultFactories();
+        this.engine.registerPortFactory(new SimplePortFactory("diamond", config => new DiamondPortModel()));
+        this.engine.registerNodeFactory(new DiamondNodeFactory());
     }
 
     generateJson() {
@@ -217,10 +225,12 @@ class ScriptBuilder extends React.Component {
                             } else if (data.type === 'out'){
                                 node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'hotpink');
                                 node.addPort(new DefaultPortModel(false, 'out-1', 'Out'));
-                            } else {
+                            } else if (data.type === 'out-in') {
                                 node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'hotpink');
                                 node.addPort(new DefaultPortModel(false, 'out-in-11', 'In'));
                                 node.addPort(new DefaultPortModel(true, 'out-in-12', 'Out'));
+                            } else {
+                                node = new DiamondNodeModel();
                             }
                             var points = this.engine.getRelativeMousePoint(event);
                             node.x = points.x;
