@@ -21,7 +21,7 @@ class Modal extends Component {
                     {/* If you want Bottom Sheet Modal then add
         bottom-sheet class */}
                     <div className="modal-content">
-                        <h4>Modal Header</h4>
+                        <h4>Enter your question</h4>
                         <div className="input-field col s6">
                             <input placeholder="Enter your question" id="question_text" type="text" className="validate" />
                         </div>

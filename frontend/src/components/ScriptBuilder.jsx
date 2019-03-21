@@ -7,6 +7,7 @@ import {
     DefaultLinkFactory,
     DefaultNodeModel,
     DefaultPortModel,
+    DiagramModel
 } from 'storm-react-diagrams';
 import 'storm-react-diagrams/dist/style.min.css';
 import './srd.css';
@@ -16,7 +17,11 @@ import M from "materialize-css";
 import "materialize-css/dist/css/materialize.min.css";
 import CallButton from "./CallButton";
 
-const ShareToast ='<textarea style="font-size:12px;" rows="8" cols="80" id="textarea2" class="materialize-textarea" data-length="120">Random value</textarea>';
+const ShareToast ='<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
+    'https://127.0.0.1:8000/static/css/call.css\n' +
+    'https://127.0.0.1:8000/static/js/call.js\n' +
+    '&lt;div class=&quot;mythical-call&quot;&gt;&lt;/div&gt;\n' +
+    '</textarea>';
 
 
 class ScriptBuilder extends React.Component {
@@ -31,13 +36,13 @@ class ScriptBuilder extends React.Component {
         surveyId: '',
         engine: '',
         responseId: '',
+        sideJSON: '',
     };
 
     componentWillMount() {
         this.engine = new DiagramEngine();
         this.engine.registerNodeFactory(new DefaultNodeFactory());
         this.engine.registerLinkFactory(new DefaultLinkFactory());
-        M.toast({html: ShareToast});
     }
 
     generateJson() {
@@ -72,6 +77,7 @@ class ScriptBuilder extends React.Component {
         if (this.state.surveyId != '') {
             console.log(this.engine.getDiagramModel().serializeDiagram());
                 document.getElementById("generate-button").style.backgroundColor = "#4caf50";
+                M.toast({html: ShareToast});
         } else {
             document.getElementById("generate-button").style.backgroundColor = "#f44336";
         }
@@ -94,7 +100,7 @@ class ScriptBuilder extends React.Component {
                 this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
                 document.getElementById('question_text').value = '';
                 this.engine.repaintCanvas();
-            }, 500)
+            }, 1000)
         } else {
             this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
             document.getElementById('question_text').value = '';
@@ -106,8 +112,7 @@ class ScriptBuilder extends React.Component {
         this.setState({
             callButtonValue: e.target.value
         })
-
-    }
+    };
 
     callPhone = () => {
         console.log('Calling');
@@ -142,7 +147,28 @@ class ScriptBuilder extends React.Component {
                     }
                 });
         }, 2000);
-    }
+    };
+
+    changeScript = (id) => {
+        fetch('http://127.0.0.1:8000/builder/getit/'+id)
+            .then(res=>res.json())
+            .then(data=>{
+                this.setState({
+                    sideJSON: data
+                });
+                console.log('are bhai bhai', data);
+                var str = JSON.stringify(data['script_flow']);
+                console.log(str)
+                console.log(JSON.parse(str));
+                var model2 = new DiagramModel();
+                console.log(data['script_flow']);
+                console.log(model2.deSerializeDiagram(JSON.parse(str), this.engine));
+                console.log(model2);
+                this.engine.setDiagramModel(model2);
+                // this.engine.repaintCanvas();
+                console.log(this.engine.getDiagramModel());
+            });
+    };
 
     render() {
         return (
@@ -177,7 +203,7 @@ class ScriptBuilder extends React.Component {
                         <i className="material-icons right">cloud</i>Generate</a>
                 </div>
                 <div className="content">
-                    <Sidebar />
+                    <Sidebar changeScript={this.changeScript}/>
                     <div
                         className="diagram-layer"
                         onDrop={event => {

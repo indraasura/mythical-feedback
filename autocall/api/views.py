@@ -53,6 +53,8 @@ class MakeCallAPIView(APIView):
                                                         call_status='IN-PROGRESS')
         survey_response.save()
 
+        print(WEBSITE_URL + "/answer/?survey=" + str(survey) + '&phone=' + str(to_phonenumber) + '&response=' + str(survey_response.id))
+
         call = self.client.calls.create(
             to=to_phonenumber,
             from_=from_phonenumber,
@@ -78,7 +80,7 @@ class AnswerCallAPIView(APIView):
         response = VoiceResponse()
         response.say(survey_script_flow[0]['question'])
 
-        response.record(timeout=5,
+        response.record(timeout=2,
                         action=WEBSITE_URL + '/next/?counter=1&survey=' + str(survey_id) + '&response=' + str(survey_response),
                         recordingStatusCallback=WEBSITE_URL + '/save/?survey=' + str(survey_id) + '&question=' +
                                                 str(survey_script_flow[0]['id']) + '&response=' + str(survey_response),
@@ -103,7 +105,7 @@ class NextCallAPIView(APIView):
         if len(survey_script_flow) > survey_counter:
             response.say(survey_script_flow[survey_counter]['question'])
 
-            response.record(timeout=5,
+            response.record(timeout=2,
                             action=WEBSITE_URL + '/next/?counter=' + str(survey_counter + 1) + '&survey=' + survey_id + '&response=' + str(survey_response),
                             recordingStatusCallback=WEBSITE_URL + '/save/?survey=' + str(survey_id) + '&question=' +
                                                     str(survey_script_flow[survey_counter]['id']) + '&response=' + str(survey_response),

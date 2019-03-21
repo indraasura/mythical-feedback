@@ -8,6 +8,18 @@ from scriptbuilder.models import ScriptBuilder
 from autocall.models import Survey
 
 
+class ScriptJSONAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    """
+    lookup_field = 'pk'
+    permission_classes = ()
+    serializer_class = ScriptBuilderSerializer
+
+    def get_queryset(self):
+        return ScriptBuilder.objects.all()
+
+
+
 class ScriptFlowAPIView(generics.ListCreateAPIView):
     """
 

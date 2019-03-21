@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '139.59.37.82', '81d5a3fa.ngrok.io']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '139.59.37.82', '5cf2f14d.ngrok.io']
 
 
 # Application definition
@@ -168,4 +168,4 @@ AUTH_USER_MODEL = 'accounts.User'
 APPEND_SLASH = False
 ACCOUNT_SID = config("ACCOUNT_SID")
 AUTH_TOKEN = config("AUTH_TOKEN")
-WEBSITE_URL = 'https://81d5a3fa.ngrok.io/autocall'
+WEBSITE_URL = 'https://5cf2f14d.ngrok.io/autocall'
