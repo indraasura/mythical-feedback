@@ -43,6 +43,18 @@ class Sidebar extends Component {
     render() {
         return (
             <div>
+                <ul id="slide-out" className="sidenav sidenav-fixed fixed-side-nav" style={{backgroundColor: "#393939"}}>
+                    <li>
+                        <a href={"#"} style={{height: "60px"}}>
+                            <div><i className="icon-side material-icons white-text">add</i></div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href={"#"} style={{height: "60px"}}>
+                            <div><i className="icon-side material-icons white-text">folder</i></div>
+                        </a>
+                    </li>
+                </ul>
                 <ul id="slide-out" className="sidenav sidenav-fixed card-look-side-nav">
                     <li><a className="subheader">Tray (Drag and drop)</a></li>
                     <li>

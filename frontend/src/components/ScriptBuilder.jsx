@@ -14,7 +14,7 @@ import { DiamondNodeModel } from "./diamond/DiamondNodeModel";
 import { DiamondNodeFactory } from "./diamond/DiamondNodeFactory";
 import { SimplePortFactory } from "./diamond/SimplePortFactory";
 import { DiamondPortModel } from "./diamond/DiamondPortModel";
-
+import { distributeElements } from "./dagre-utils";
 import 'storm-react-diagrams/dist/style.min.css';
 import './srd.css';
 import Sidebar from './Sidebar'
@@ -117,6 +117,23 @@ class ScriptBuilder extends React.Component {
         }
     }
 
+    getDistributedModel(engine, model) {
+        const serialized = model.serializeDiagram();
+        const distributedSerializedDiagram = distributeElements(serialized);
+
+        //deserialize the model
+        let deSerializedModel = new DiagramModel();
+        deSerializedModel.deSerializeDiagram(distributedSerializedDiagram, engine);
+        return deSerializedModel;
+    }
+
+    autoDistribute() {
+        const model = this.engine.getDiagramModel();
+        let distributedModel = this.getDistributedModel(this.engine, model);
+        this.engine.setDiagramModel(distributedModel);
+        this.forceUpdate();
+    }
+
     callHandleInput = (e) => {
         this.setState({
             callButtonValue: e.target.value
@@ -209,6 +226,9 @@ class ScriptBuilder extends React.Component {
                             <div className="indeterminate"></div>
                         </div> : null }
                         <i className="material-icons right">cloud</i>Generate</a>
+                </div>
+                <div className={"fixedLoader"}>
+                    <div className={"loadingspinner"}></div>
                 </div>
                 <div className="content">
                     <Sidebar changeScript={this.changeScript}/>

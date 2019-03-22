@@ -1,9 +1,18 @@
 .card-look-side-nav {
     margin: 20px;
+    margin-left: 100px;
     height: 85%;
+}
+.fixed-side-nav {
+    width: 60px;
 }
 .inline-icon {
     vertical-align: middle;
     font-size: 28px !important;
     padding-right: 10px;
+}
+.icon-side {
+    margin-left: -20px;
+    margin-top: 10px;
+    font-size: 34px;
 }
