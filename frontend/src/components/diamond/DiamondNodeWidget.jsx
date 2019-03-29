@@ -40,7 +40,7 @@ export class DiamonNodeWidget extends React.Component<DiamonNodeWidgetProps, Dia
           <g id="Layer_1">
           </g>
           <g id="Layer_2">
-            <polygon fill="purple" stroke="#000000" stroke-width="3" stroke-miterlimit="10" points="10,` +
+            <polygon fill="#393939" stroke="#2A2A2A" stroke-width="6" stroke-miterlimit="10" points="10,` +
                         this.props.size / 2 +
                         ` ` +
                         this.props.size / 2 +
@@ -72,7 +72,9 @@ export class DiamonNodeWidget extends React.Component<DiamonNodeWidgetProps, Dia
                         position: "absolute",
                         zIndex: 10,
                         left: this.props.size / 2 - 8,
-                        top: -8
+                        top: -8,
+                        backgroundColor: "red",
+                        opacity: 0.3,
                     }}
                 >
                     <PortWidget name="top" node={this.props.node} />
@@ -82,7 +84,9 @@ export class DiamonNodeWidget extends React.Component<DiamonNodeWidgetProps, Dia
                         position: "absolute",
                         zIndex: 10,
                         left: this.props.size - 8,
-                        top: this.props.size / 2 - 8
+                        top: this.props.size / 2 - 8,
+                        backgroundColor: "yellow",
+                        opacity: 0.3,
                     }}
                 >
                     <PortWidget name="right" node={this.props.node} />
@@ -92,7 +96,9 @@ export class DiamonNodeWidget extends React.Component<DiamonNodeWidgetProps, Dia
                         position: "absolute",
                         zIndex: 10,
                         left: this.props.size / 2 - 8,
-                        top: this.props.size - 8
+                        top: this.props.size - 8,
+                        backgroundColor: "green",
+                        opacity: 0.3,
                     }}
                 >
                     <PortWidget name="bottom" node={this.props.node} />

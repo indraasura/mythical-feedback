@@ -8,7 +8,12 @@ class CallButton extends Component {
         console.log('wwww', props);
     }
 
+    undoHandler(e) {
+        return
+    }
+
     componentDidMount() {
+        document.addEventListener('undo', this.undoHandler);
         document.getElementById("search").addEventListener("keyup", (event) => {
             if (event.key === "Enter") {
                 console.log(event.target.value);

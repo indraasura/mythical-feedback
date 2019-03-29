@@ -43,6 +43,7 @@ class ScriptBuilder extends React.Component {
         engine: '',
         responseId: '',
         sideJSON: '',
+        localStorageLoader: false,
     };
 
     componentWillMount() {
@@ -52,13 +53,24 @@ class ScriptBuilder extends React.Component {
         this.engine.installDefaultFactories();
         this.engine.registerPortFactory(new SimplePortFactory("diamond", config => new DiamondPortModel()));
         this.engine.registerNodeFactory(new DiamondNodeFactory());
+        if (localStorage.getItem("script_flow")) {
+            const localScriptFlow = JSON.parse(localStorage.getItem("script_flow"));
+            var str = JSON.stringify(localScriptFlow[localScriptFlow.length - 1]);
+
+            //!------------- DESERIALIZING ----------------
+
+            var model2 = new DiagramModel();
+            model2.deSerializeDiagram(JSON.parse(str), this.engine);
+            this.engine.setDiagramModel(model2);
+        }
     }
 
+    // TODO: How stupid this function is, stop it, get some help!
     generateJson() {
+        console.log(this.engine.getDiagramModel().serializeDiagram());
         this.setState({
             isLoading: true
         });
-        console.log(this.state);
         fetch('http://127.0.0.1:8000/builder/upload/', {
             method: 'POST',
             headers: {
@@ -84,7 +96,6 @@ class ScriptBuilder extends React.Component {
             isLoading: false
         });
         if (this.state.surveyId != '') {
-            console.log(this.engine.getDiagramModel().serializeDiagram());
                 document.getElementById("generate-button").style.backgroundColor = "#4caf50";
                 M.toast({html: ShareToast});
         } else {
@@ -129,9 +140,37 @@ class ScriptBuilder extends React.Component {
 
     autoDistribute() {
         const model = this.engine.getDiagramModel();
-        let distributedModel = this.getDistributedModel(this.engine, model);
-        this.engine.setDiagramModel(distributedModel);
+        //let distributedModel = this.getDistributedModel(this.engine, model);
+        this.engine.setDiagramModel(model);
         this.forceUpdate();
+    }
+
+    refreshModel() {
+        var str = JSON.stringify(this.engine.getDiagramModel().serializeDiagram());
+
+        //!------------- DESERIALIZING ----------------
+
+        var model2 = new DiagramModel();
+        model2.deSerializeDiagram(JSON.parse(str), this.engine);
+        this.engine.setDiagramModel(model2);
+    }
+
+    saveScriptFlow() {
+        this.setState({"localStorageLoader": true});
+        let localScriptFlow = localStorage.getItem("script_flow");
+        console.log('Local Storage =', localScriptFlow);
+        if (!localScriptFlow) {
+            localStorage.setItem("script_flow", JSON.stringify([]));
+            setTimeout(() => { this.setState({"localStorageLoader": false}); }, 3000);
+            return
+        }
+        localScriptFlow = JSON.parse(localScriptFlow);
+        if (localScriptFlow.length > 50) {
+            localScriptFlow.shift();
+        }
+        localScriptFlow.push(this.engine.getDiagramModel().serializeDiagram());
+        localStorage.setItem("script_flow", JSON.stringify(localScriptFlow));
+        setTimeout(() => { this.setState({"localStorageLoader": false}); }, 3000);
     }
 
     callHandleInput = (e) => {
@@ -141,7 +180,6 @@ class ScriptBuilder extends React.Component {
     };
 
     callPhone = () => {
-        console.log('Calling');
         fetch('http://127.0.0.1:8000/autocall/call/', {
             method: 'POST',
             headers: {
@@ -227,18 +265,18 @@ class ScriptBuilder extends React.Component {
                         </div> : null }
                         <i className="material-icons right">cloud</i>Generate</a>
                 </div>
-                <div className={"fixedLoader"}>
+                {(this.state.localStorageLoader) ? <div className={"fixedLoader"} id={"localStorageLoader"}>
                     <div className={"loadingspinner"}></div>
-                </div>
+                </div> : null}
                 <div className="content">
                     <Sidebar changeScript={this.changeScript}/>
                     <div
                         className="diagram-layer"
                         onDrop={event => {
-                            console.log('NODE ADDED');
                             var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
                             var nodesCount = Lodash.keys(this.engine.getDiagramModel().getNodes()).length;
                             var node = null;
+                            var points = this.engine.getRelativeMousePoint(event);
                             if (data.type === 'in') {
                                 node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'peru');
                                 node.addPort(new DefaultPortModel(true, 'in-1', 'In'));
@@ -250,21 +288,73 @@ class ScriptBuilder extends React.Component {
                                 node.addPort(new DefaultPortModel(false, 'out-in-11', 'In'));
                                 node.addPort(new DefaultPortModel(true, 'out-in-12', 'Out'));
                             } else {
+                                // Diamond node created
                                 node = new DiamondNodeModel();
+
+                                // If True then follow this node
+                                var condition_true_node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'green');
+                                condition_true_node.addPort(new DefaultPortModel(false, 'out-in-11', 'In'));
+                                condition_true_node.addPort(new DefaultPortModel(true, 'out-in-12', 'Out'));
+
+                                // If False then
+                                var condition_false_node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'red');
+                                condition_false_node.addPort(new DefaultPortModel(false, 'out-in-11', 'In'));
+                                condition_false_node.addPort(new DefaultPortModel(true, 'out-in-12', 'Out'));
+
+                                // Neither true nor False then
+                                var condition_neutral_node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'yellow');
+                                condition_neutral_node.addPort(new DefaultPortModel(false, 'out-in-11', 'In'));
+                                condition_neutral_node.addPort(new DefaultPortModel(true, 'out-in-12', 'Out'));
+
+
+                                // Now attach these loosed nodes with diamond
+                                const true_link = condition_true_node.getInPorts()[0].link(node.getPort("bottom"));
+                                const false_link = condition_false_node.getInPorts()[0].link(node.getPort("top"));
+                                const neutral_link = condition_neutral_node.getInPorts()[0].link(node.getPort("right"));
+
+                                // Now set these loosed nodes some position
+                                node.x = points.x;
+                                node.y = points.y;
+
+                                condition_true_node.x = points.x + 150;
+                                condition_true_node.y = points.y + 150;
+
+                                condition_false_node.x = points.x + 150;
+                                condition_false_node.y = points.y - 80;
+
+                                condition_neutral_node.x = points.x + 200;
+                                condition_neutral_node.y = points.y + 37;
+
+                                // Add them in our model
+                                this.engine.getDiagramModel().addNode(node);
+                                this.engine.getDiagramModel().addNode(condition_true_node);
+                                this.engine.getDiagramModel().addNode(condition_false_node);
+                                this.engine.getDiagramModel().addNode(condition_neutral_node);
+
+                                this.engine.getDiagramModel().addLink(true_link);
+                                this.engine.getDiagramModel().addLink(false_link);
+                                this.engine.getDiagramModel().addLink(neutral_link);
+
+                                // Without refreshing, the link was getting generated at top left and if we
+                                // click on canvas then only the link get attached with nodes
+                                // so it's better if we refresh the model
+                                this.refreshModel();
                             }
-                            var points = this.engine.getRelativeMousePoint(event);
-                            node.x = points.x;
-                            node.y = points.y;
-                            this.engine.getDiagramModel().addNode(node);
-                            console.log('orginal', this.engine.getDiagramModel().serializeDiagram());
+
+                            if (data.type !== 'diamond') {
+                                node.x = points.x;
+                                node.y = points.y;
+                                this.engine.getDiagramModel().addNode(node);
+                                console.log('orginal', this.engine.getDiagramModel().serializeDiagram());
+                            }
                             this.forceUpdate();
+                            this.saveScriptFlow();
                         }}
                         id={"node-" + Lodash.keys(this.engine.getDiagramModel().getNodes()).length + 1}
                         onDragOver={event => {
                             event.preventDefault();
                         }}
                         onDoubleClick={(e) => {
-                            console.log(Lodash.keys(this.engine.getDiagramModel().getNodes()).length);
                             // var person = prompt("Please enter your name", "Harry Potter");
                             const iid = e.target.offsetParent.attributes[1].nodeValue;
                             this.setState({
@@ -272,31 +362,17 @@ class ScriptBuilder extends React.Component {
                                 engine: this.engine
                             }, () => {
                                 let elem = document.getElementById('modal1');
+                                console.log(elem);
                                 var instance = M.Modal.getInstance(elem);
+                                console.log(instance);
                                 instance.open();
                                 document.getElementById('question_text').focus();
                             });
 
-
-
-
-
-
-                            // let iid = this.engine.getDiagramModel().serializeDiagram().nodes[0].id;
-
-
-
-                            // this.engine.getDiagramModel().nodes[iid].name = person;
-                            // this.engine.repaintCanvas();
-
-
-
-
-                            // console.log(this.props);
                         }
                         }
                     >
-                        <DiagramWidget className="srd-demo-canvas" diagramEngine={this.engine} />
+                        <DiagramWidget className="srd-demo-canvas" smartRouting={true} diagramEngine={this.engine} />
                     </div>
                 </div>
             </div>
