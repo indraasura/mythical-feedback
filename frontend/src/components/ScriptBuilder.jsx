@@ -10,20 +10,19 @@ import {
     DiagramModel,
 } from 'storm-react-diagrams';
 
-import { DiamondNodeModel } from "./diamond/DiamondNodeModel";
-import { DiamondNodeFactory } from "./diamond/DiamondNodeFactory";
-import { SimplePortFactory } from "./diamond/SimplePortFactory";
-import { DiamondPortModel } from "./diamond/DiamondPortModel";
-import { distributeElements } from "./dagre-utils";
+import {DiamondNodeModel} from "./diamond/DiamondNodeModel";
+import {DiamondNodeFactory} from "./diamond/DiamondNodeFactory";
+import {SimplePortFactory} from "./diamond/SimplePortFactory";
+import {DiamondPortModel} from "./diamond/DiamondPortModel";
+import {distributeElements} from "./dagre-utils";
 import 'storm-react-diagrams/dist/style.min.css';
 import './srd.css';
 import Sidebar from './Sidebar'
-// import Modal from "./Modal";
 import M from "materialize-css";
 import "materialize-css/dist/css/materialize.min.css";
 import CallButton from "./CallButton";
 
-const ShareToast ='<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
+const ShareToast = '<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
     'https://127.0.0.1:8000/static/css/call.css\n' +
     'https://127.0.0.1:8000/static/js/call.js\n' +
     '&lt;div class=&quot;mythical-call&quot;&gt;&lt;/div&gt;\n' +
@@ -44,33 +43,47 @@ class ScriptBuilder extends React.Component {
         responseId: '',
         sideJSON: '',
         localStorageLoader: false,
+        redoStack: [],
     };
 
     componentWillMount() {
+        // Event listener for any key stroke pressed
+        document.addEventListener('keydown', this.keyPressHandler);
+
+        // Script Builder initialized with default settings
         this.engine = new DiagramEngine();
         this.engine.registerNodeFactory(new DefaultNodeFactory());
         this.engine.registerLinkFactory(new DefaultLinkFactory());
         this.engine.installDefaultFactories();
-        this.engine.registerPortFactory(new SimplePortFactory("diamond", config => new DiamondPortModel()));
+
+        // Custom Diamond node for optional conditions
+        this.engine.registerPortFactory(new SimplePortFactory("diamond", () => {
+            return new DiamondPortModel();
+        }));
         this.engine.registerNodeFactory(new DiamondNodeFactory());
-        if (localStorage.getItem("script_flow")) {
-            const localScriptFlow = JSON.parse(localStorage.getItem("script_flow"));
-            var str = JSON.stringify(localScriptFlow[localScriptFlow.length - 1]);
 
-            //!------------- DESERIALIZING ----------------
-
-            var model2 = new DiagramModel();
-            model2.deSerializeDiagram(JSON.parse(str), this.engine);
-            this.engine.setDiagramModel(model2);
+        // Load locally saved data from localStorage
+        const localScriptFlow = JSON.parse(localStorage.getItem("script_flow"));
+        if (localScriptFlow && localScriptFlow.length > 0) {
+            const str = JSON.stringify(localScriptFlow[localScriptFlow.length - 1]);
+            const custom_model = new DiagramModel();
+            custom_model.deSerializeDiagram(JSON.parse(str), this.engine);
+            this.engine.setDiagramModel(custom_model);
         }
+    }
+
+    componentWillUnmount() {
+        // Remove Event Listener once in different component
+        document.removeEventListener('keydown', this.keyPressHandler);
     }
 
     // TODO: How stupid this function is, stop it, get some help!
     generateJson() {
-        console.log(this.engine.getDiagramModel().serializeDiagram());
         this.setState({
             isLoading: true
         });
+
+        // Upload JSON to get it saved
         fetch('http://127.0.0.1:8000/builder/upload/', {
             method: 'POST',
             headers: {
@@ -83,38 +96,35 @@ class ScriptBuilder extends React.Component {
             })
         }).then(response => response.json())
             .then(response => {
-                console.log(response);
-                if (response.status == 500) {
-                    return
-                } else {
-                    this.setState({
-                        surveyId: response.id
-                    })
-                }
+                    console.log(response);
+                    if (response.status === 500) {
+                        return ''
+                    } else {
+                        this.setState({
+                            surveyId: response.id
+                        })
+                    }
+                },
+                (error) => {
+                    M.toast({html: error});
+                });
+        setTimeout(() => {
+            this.setState({
+                isLoading: false
             });
-        setTimeout(() => { this.setState({
-            isLoading: false
-        });
-        if (this.state.surveyId != '') {
+            if (this.state.surveyId !== '') {
                 document.getElementById("generate-button").style.backgroundColor = "#4caf50";
                 M.toast({html: ShareToast});
-        } else {
-            document.getElementById("generate-button").style.backgroundColor = "#f44336";
-        }
+            } else {
+                document.getElementById("generate-button").style.backgroundColor = "#f44336";
+            }
         }, 3000);
     }
 
     handleInput() {
-        // let iid = this.engine.getDiagramModel().serializeDiagram().nodes[0].id;
         const iid = this.state.iid;
         let engineState = this.state.engine.getDiagramModel().serializeDiagram();
-        let counter = 0
-        console.log(iid);
-        console.log(engineState);
-        console.log(engineState.nodes);
-        console.log(engineState.nodes[iid]);
         if (!engineState.nodes.hasOwnProperty(iid)) {
-            console.log('NOT FOUND');
             setTimeout(() => {
                 engineState = this.engine.getDiagramModel().serializeDiagram();
                 this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
@@ -132,7 +142,6 @@ class ScriptBuilder extends React.Component {
         const serialized = model.serializeDiagram();
         const distributedSerializedDiagram = distributeElements(serialized);
 
-        //deserialize the model
         let deSerializedModel = new DiagramModel();
         deSerializedModel.deSerializeDiagram(distributedSerializedDiagram, engine);
         return deSerializedModel;
@@ -140,39 +149,72 @@ class ScriptBuilder extends React.Component {
 
     autoDistribute() {
         const model = this.engine.getDiagramModel();
-        //let distributedModel = this.getDistributedModel(this.engine, model);
-        this.engine.setDiagramModel(model);
+        let distributedModel = this.getDistributedModel(this.engine, model);
+        this.engine.setDiagramModel(distributedModel);
         this.forceUpdate();
     }
 
     refreshModel() {
-        var str = JSON.stringify(this.engine.getDiagramModel().serializeDiagram());
+        const str = JSON.stringify(this.engine.getDiagramModel().serializeDiagram());
 
-        //!------------- DESERIALIZING ----------------
-
-        var model2 = new DiagramModel();
-        model2.deSerializeDiagram(JSON.parse(str), this.engine);
-        this.engine.setDiagramModel(model2);
+        const custom_model = new DiagramModel();
+        custom_model.deSerializeDiagram(JSON.parse(str), this.engine);
+        this.engine.setDiagramModel(custom_model);
     }
 
+    undoHandler() {
+        const currentStack = this.state.redoStack;
+        const localScriptFlow = JSON.parse(localStorage.getItem("script_flow"));
+        currentStack.push(localScriptFlow.pop());
+        this.setState({
+            redoStack: currentStack
+        });
+        localStorage.setItem("script_flow", JSON.stringify(localScriptFlow));
+
+        // TODO: At last redo, delete everything
+        if (localScriptFlow.length > 0) {
+            const str = JSON.stringify(localScriptFlow[localScriptFlow.length - 1]);
+
+            const custom_model = new DiagramModel();
+            custom_model.deSerializeDiagram(JSON.parse(str), this.engine);
+            this.engine.setDiagramModel(custom_model);
+        }
+    }
+
+    // Arrow function because with normal function we were not able to access undoHandler, fascinating
+    keyPressHandler = (e) => {
+        if (e.keyCode === 90 && e.ctrlKey) {
+            this.undoHandler();
+        }
+    };
+
+    // Save Script JSON in localStorage as Array with JSON inside them with 50 as max length
     saveScriptFlow() {
-        this.setState({"localStorageLoader": true});
         let localScriptFlow = localStorage.getItem("script_flow");
-        console.log('Local Storage =', localScriptFlow);
         if (!localScriptFlow) {
             localStorage.setItem("script_flow", JSON.stringify([]));
-            setTimeout(() => { this.setState({"localStorageLoader": false}); }, 3000);
-            return
         }
         localScriptFlow = JSON.parse(localScriptFlow);
+        const currentScriptFlow = this.engine.getDiagramModel().serializeDiagram();
+        if (localScriptFlow.length > 0 &&
+            localScriptFlow[localScriptFlow.length - 1].links.length === currentScriptFlow.links.length &&
+            localScriptFlow[localScriptFlow.length - 1].nodes.length === currentScriptFlow.nodes.length) {
+            console.log('Nothing');
+            return ''
+        } else {
+            this.setState({"localStorageLoader": true});
+        }
         if (localScriptFlow.length > 50) {
             localScriptFlow.shift();
         }
-        localScriptFlow.push(this.engine.getDiagramModel().serializeDiagram());
+        localScriptFlow.push(currentScriptFlow);
         localStorage.setItem("script_flow", JSON.stringify(localScriptFlow));
-        setTimeout(() => { this.setState({"localStorageLoader": false}); }, 3000);
+        setTimeout(() => {
+            this.setState({"localStorageLoader": false});
+        }, 1200);
     }
 
+    // Call Button input value to be saved in state
     callHandleInput = (e) => {
         this.setState({
             callButtonValue: e.target.value
@@ -196,15 +238,17 @@ class ScriptBuilder extends React.Component {
                 this.setState({
                     responseId: response.id
                 })
+            }, (error) => {
+                console.log('callPhone =', error);
             });
 
-        var timer = setInterval(() => {
+        const timer = setInterval(() => {
             fetch('http://127.0.0.1:8000/autocall/survey/responses/' + this.state.responseId, {
                 method: 'GET'
             }).then(response => response.json())
                 .then(response => {
                     console.log(response.call_status);
-                    if (response.call_status == 'DONE') {
+                    if (response.call_status === 'DONE') {
                         document.getElementById("search").style.background = "#f44336";
                         document.getElementById("search").classList.remove("call-animation");
                         clearInterval(timer);
@@ -214,14 +258,13 @@ class ScriptBuilder extends React.Component {
     };
 
     changeScript = (id) => {
-        fetch('http://127.0.0.1:8000/builder/getit/'+id)
-            .then(res=>res.json())
-            .then(data=>{
+        fetch('http://127.0.0.1:8000/builder/getit/' + id)
+            .then(res => res.json())
+            .then(data => {
                 this.setState({
                     sideJSON: data
                 });
-                var str = JSON.stringify(data['script_flow']);
-                console.log(str);
+                const str = JSON.stringify(data['script_flow']);
                 let model2 = new DiagramModel();
                 let obj = JSON.parse(str);
                 let node = obj.nodes[0];
@@ -245,11 +288,14 @@ class ScriptBuilder extends React.Component {
                         <div className="modal-content">
                             <h4>Modal Header</h4>
                             <div className="input-field col s6">
-                                <input placeholder="Enter your question" id="question_text" type="text" className="validate" />
+                                <input placeholder="Enter your question" id="question_text" type="text"
+                                       className="validate"/>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <a href="#" className="modal-close waves-effect waves-green btn-flat" onClick={() => { this.handleInput()}}>
+                            <a href="#" className="modal-close waves-effect waves-green btn-flat" onClick={() => {
+                                this.handleInput()
+                            }}>
                                 Submit
                             </a>
                         </div>
@@ -258,29 +304,34 @@ class ScriptBuilder extends React.Component {
                         <CallButton handleInput={this.callHandleInput} callPhone={this.callPhone}/>
                     </div>
                     <a className="waves-effect btn-large" id={"generate-button"}
-                       onClick={() => { this.generateJson()}}
-                        style={{backgroundColor: "#393939"}}>
+                       onClick={() => {
+                           this.generateJson()
+                       }}
+                       style={{backgroundColor: "#393939"}}>
                         {this.state.isLoading ? <div className="progress button-progress">
-                            <div className="indeterminate"></div>
-                        </div> : null }
+                            <div className="indeterminate"> </div>
+                        </div> : null}
                         <i className="material-icons right">cloud</i>Generate</a>
                 </div>
                 {(this.state.localStorageLoader) ? <div className={"fixedLoader"} id={"localStorageLoader"}>
-                    <div className={"loadingspinner"}></div>
+                    <div className={"loadingspinner"}> </div>
                 </div> : null}
                 <div className="content">
                     <Sidebar changeScript={this.changeScript}/>
                     <div
                         className="diagram-layer"
+                        onMouseUp={event => {
+                            this.saveScriptFlow();
+                        }}
                         onDrop={event => {
-                            var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
-                            var nodesCount = Lodash.keys(this.engine.getDiagramModel().getNodes()).length;
-                            var node = null;
-                            var points = this.engine.getRelativeMousePoint(event);
+                            const data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
+                            const nodesCount = Lodash.keys(this.engine.getDiagramModel().getNodes()).length;
+                            let node = null;
+                            const points = this.engine.getRelativeMousePoint(event);
                             if (data.type === 'in') {
                                 node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'peru');
                                 node.addPort(new DefaultPortModel(true, 'in-1', 'In'));
-                            } else if (data.type === 'out'){
+                            } else if (data.type === 'out') {
                                 node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'hotpink');
                                 node.addPort(new DefaultPortModel(false, 'out-1', 'Out'));
                             } else if (data.type === 'out-in') {
@@ -292,25 +343,28 @@ class ScriptBuilder extends React.Component {
                                 node = new DiamondNodeModel();
 
                                 // If True then follow this node
-                                var condition_true_node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'green');
+                                const condition_true_node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'green');
                                 condition_true_node.addPort(new DefaultPortModel(false, 'out-in-11', 'In'));
                                 condition_true_node.addPort(new DefaultPortModel(true, 'out-in-12', 'Out'));
 
                                 // If False then
-                                var condition_false_node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'red');
+                                const condition_false_node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'red');
                                 condition_false_node.addPort(new DefaultPortModel(false, 'out-in-11', 'In'));
                                 condition_false_node.addPort(new DefaultPortModel(true, 'out-in-12', 'Out'));
 
                                 // Neither true nor False then
-                                var condition_neutral_node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'yellow');
+                                const condition_neutral_node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'yellow');
                                 condition_neutral_node.addPort(new DefaultPortModel(false, 'out-in-11', 'In'));
                                 condition_neutral_node.addPort(new DefaultPortModel(true, 'out-in-12', 'Out'));
 
 
                                 // Now attach these loosed nodes with diamond
                                 const true_link = condition_true_node.getInPorts()[0].link(node.getPort("bottom"));
+                                true_link.addLabel("True");
                                 const false_link = condition_false_node.getInPorts()[0].link(node.getPort("top"));
+                                false_link.addLabel("False");
                                 const neutral_link = condition_neutral_node.getInPorts()[0].link(node.getPort("right"));
+                                neutral_link.addLabel("Neutral");
 
                                 // Now set these loosed nodes some position
                                 node.x = points.x;
@@ -345,34 +399,31 @@ class ScriptBuilder extends React.Component {
                                 node.x = points.x;
                                 node.y = points.y;
                                 this.engine.getDiagramModel().addNode(node);
-                                console.log('orginal', this.engine.getDiagramModel().serializeDiagram());
                             }
-                            this.forceUpdate();
                             this.saveScriptFlow();
+                            this.forceUpdate();
                         }}
                         id={"node-" + Lodash.keys(this.engine.getDiagramModel().getNodes()).length + 1}
                         onDragOver={event => {
                             event.preventDefault();
                         }}
+                        // Such a pain to do it, Double click on node and then enter question name
+                        // TODO: Change the modal to toast if possible maybe
+                        // TODO: Don't allow double click for diamond
                         onDoubleClick={(e) => {
-                            // var person = prompt("Please enter your name", "Harry Potter");
                             const iid = e.target.offsetParent.attributes[1].nodeValue;
                             this.setState({
                                 iid: iid,
                                 engine: this.engine
                             }, () => {
                                 let elem = document.getElementById('modal1');
-                                console.log(elem);
-                                var instance = M.Modal.getInstance(elem);
-                                console.log(instance);
+                                const instance = M.Modal.getInstance(elem);
                                 instance.open();
                                 document.getElementById('question_text').focus();
                             });
-
-                        }
-                        }
+                        }}
                     >
-                        <DiagramWidget className="srd-demo-canvas" smartRouting={true} diagramEngine={this.engine} />
+                        <DiagramWidget className="srd-demo-canvas" smartRouting={true} diagramEngine={this.engine} maxNumberPointsPerLink={0}/>
                     </div>
                 </div>
             </div>
