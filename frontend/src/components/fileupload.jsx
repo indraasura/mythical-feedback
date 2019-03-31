@@ -11,6 +11,7 @@ import "filepond/dist/filepond.min.css";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import { config } from '../resources/config';
 
 // Register the plugins
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
@@ -22,7 +23,7 @@ function FileUpload() {
     <div className="App">
       <FilePond
         server={{
-          url: "https://512366ab.ngrok.io",
+          url: config.API_URL,
           timeout: 7000,
           process: (
             fieldName,
@@ -39,7 +40,7 @@ function FileUpload() {
             formData.append("excel_file", file);
 
             const request = new XMLHttpRequest();
-            request.open("POST", "https://512366ab.ngrok.io/excel/upload/");
+            request.open("POST", config.API_URL + "/excel/upload/");
 
             // Should call the progress method to update the progress to 100% before calling load
             // Setting computable to false switches the loading indicator to infinite mode

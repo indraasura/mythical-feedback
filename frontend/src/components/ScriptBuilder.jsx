@@ -21,6 +21,7 @@ import Sidebar from './Sidebar'
 import M from "materialize-css";
 import "materialize-css/dist/css/materialize.min.css";
 import CallButton from "./CallButton";
+import { config } from '../resources/config';
 
 const ShareToast = '<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
     'https://127.0.0.1:8000/static/css/call.css\n' +
@@ -84,7 +85,7 @@ class ScriptBuilder extends React.Component {
         });
 
         // Upload JSON to get it saved
-        fetch('http://127.0.0.1:8000/builder/upload/', {
+        fetch(config.API_URL + '/builder/upload/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -121,6 +122,7 @@ class ScriptBuilder extends React.Component {
         }, 3000);
     }
 
+    // TODO: Customize input css with multiple input, save it in nodes.extras
     handleInput() {
         const iid = this.state.iid;
         let engineState = this.state.engine.getDiagramModel().serializeDiagram();
@@ -130,6 +132,7 @@ class ScriptBuilder extends React.Component {
                 this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
                 document.getElementById('question_text').value = '';
                 this.engine.repaintCanvas();
+                console.log(this.engine.getDiagramModel().serializeDiagram());
             }, 1000)
         } else {
             this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
@@ -165,19 +168,21 @@ class ScriptBuilder extends React.Component {
     undoHandler() {
         const currentStack = this.state.redoStack;
         const localScriptFlow = JSON.parse(localStorage.getItem("script_flow"));
+        console.log(localScriptFlow);
         currentStack.push(localScriptFlow.pop());
         this.setState({
             redoStack: currentStack
         });
         localStorage.setItem("script_flow", JSON.stringify(localScriptFlow));
 
-        // TODO: At last redo, delete everything
+        // TODO: At last undo, delete everything
         if (localScriptFlow.length > 0) {
             const str = JSON.stringify(localScriptFlow[localScriptFlow.length - 1]);
 
             const custom_model = new DiagramModel();
             custom_model.deSerializeDiagram(JSON.parse(str), this.engine);
             this.engine.setDiagramModel(custom_model);
+            this.forceUpdate();
         }
     }
 
@@ -222,7 +227,7 @@ class ScriptBuilder extends React.Component {
     };
 
     callPhone = () => {
-        fetch('http://127.0.0.1:8000/autocall/call/', {
+        fetch(config.API_URL + '/autocall/call/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -243,7 +248,7 @@ class ScriptBuilder extends React.Component {
             });
 
         const timer = setInterval(() => {
-            fetch('http://127.0.0.1:8000/autocall/survey/responses/' + this.state.responseId, {
+            fetch(config.API_URL + '/autocall/survey/responses/' + this.state.responseId, {
                 method: 'GET'
             }).then(response => response.json())
                 .then(response => {
@@ -258,7 +263,7 @@ class ScriptBuilder extends React.Component {
     };
 
     changeScript = (id) => {
-        fetch('http://127.0.0.1:8000/builder/getit/' + id)
+        fetch(config.API_URL + '/builder/getit/' + id)
             .then(res => res.json())
             .then(data => {
                 this.setState({

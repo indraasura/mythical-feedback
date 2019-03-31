@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import M from 'materialize-css';
 import Data from '../data.json'
 import './exceldata.css';
-
+import { config } from '../resources/config';
 
 const TableRow = props => (
     <tr>
@@ -40,7 +40,7 @@ class ExcelData extends Component {
         excel_json: false
      }
     componentWillMount(){
-        fetch('http://127.0.0.1:8000/excel/get/?id=3&filename=Technical_Club_Responses.xlsx')
+        fetch(config.API_URL + '/excel/get/?id=3&filename=Technical_Club_Responses.xlsx')
             .then(res=>res.json())
             .then(data=>{
                 console.log(data);

@@ -1,24 +1,24 @@
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
+const __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (let s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+        for (let p in s) if (Object.prototype.hasOwnProperty.call(s, p))
             t[p] = s[p];
     }
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var dagre = require("dagre");
-var _ = require("lodash");
-var size = {
+const dagre = require("dagre");
+const _ = require("lodash");
+const size = {
     width: 60,
     height: 60
 };
 function distributeElements(model) {
-    var clonedModel = _.cloneDeep(model);
-    var nodes = distributeGraph(clonedModel);
+    const clonedModel = _.cloneDeep(model);
+    const nodes = distributeGraph(clonedModel);
     nodes.forEach(function (node) {
-        var modelNode = clonedModel.nodes.find(function (item) { return item.id === node.id; });
+        const modelNode = clonedModel.nodes.find(function (item) { return item.id === node.id; });
         modelNode.x = (node.x - node.width / 2) + 450;
         modelNode.y = (node.y - node.height / 2) + 100;
     });
@@ -26,9 +26,9 @@ function distributeElements(model) {
 }
 exports.distributeElements = distributeElements;
 function distributeGraph(model) {
-    var nodes = mapElements(model);
-    var edges = mapEdges(model);
-    var graph = new dagre.graphlib.Graph();
+    const nodes = mapElements(model);
+    const edges = mapEdges(model);
+    const graph = new dagre.graphlib.Graph();
     graph.setGraph({});
     graph.setDefaultEdgeLabel(function () { return ({}); });
     //add elements to dagre graph

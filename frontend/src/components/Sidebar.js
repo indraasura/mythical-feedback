@@ -4,7 +4,7 @@ import "materialize-css/dist/css/materialize.min.css";
 import TrayWidget from './TrayWidget';
 import TrayItemWidget from './TrayItemWidget';
 import './sidenav.css';
-
+import { config } from '../resources/config';
 
 class Sidebar extends Component {
 
@@ -21,7 +21,7 @@ class Sidebar extends Component {
     }
 
     componentWillMount(){
-        fetch('http://127.0.0.1:8000/builder/view/')
+        fetch(config.API_URL + '/builder/view/')
             .then(res=>res.json())
             .then(data=>{
                 console.log(data);
@@ -33,7 +33,7 @@ class Sidebar extends Component {
     }
 
     getFileDetails(id, name, func){
-        fetch('http://127.0.0.1:8000/builder/getit/'+id)
+        fetch(config.API_URL + '/builder/getit/'+id)
             .then(res=>res.json())
             .then(data=>{
                 console.log('are bhai bhai', data);
