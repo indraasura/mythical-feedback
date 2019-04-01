@@ -26,7 +26,7 @@ class CallButton extends Component {
             }
         });
         document.getElementById("callButton").onclick = function(){
-            if (document.getElementById("search").style.width == '250px') {
+            if (document.getElementById("search").style.width === '250px') {
                 document.getElementById("search").style.width = "50px";
                 document.getElementById('search').value = '';
                 document.getElementById("search").blur();

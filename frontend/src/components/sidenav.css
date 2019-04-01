@@ -12,7 +12,53 @@
     padding-right: 10px;
 }
 .icon-side {
-    margin-left: -20px;
+    margin-left: -18px;
     margin-top: 10px;
     font-size: 34px;
+}
+.more {
+    background:none;
+    border:none;
+    color:#FFF;
+    font-family:Verdana, Geneva, sans-serif;
+    cursor:pointer;
+}
+
+.side-buttons {
+    padding-left: 20px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+button:focus {
+    background: none;
+}
+
+.side-hover:hover{
+    background-color: #2D2D2D;
+    -webkit-transition: background-color 300ms linear;
+    -ms-transition: background-color 300ms linear;
+    transition: background-color 300ms linear;
+}
+
+.side-hover:not( :hover ){
+    -webkit-transition: background-color 300ms linear;
+    -ms-transition: background-color 300ms linear;
+    transition: background-color 300ms linear;
+}
+
+.side-loader {
+    top: 0;
+    bottom: 30%;
+    left: 0;
+    right: 0;
+    position: absolute;
+    margin: auto;
+}
+
+.bottom-hide-nav {
+    bottom: 45px;
+    padding-right: 10px;
+    position: absolute;
+
 }

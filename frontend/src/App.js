@@ -16,16 +16,16 @@ class App extends Component {
         return (
             <Router>
                 <div>
-                    <nav className = "nav-bg">
-                        <div className="nav-wrapper">
-                            <ul id="nav-mobile" className="right hide-on-med-and-down">
-                                <li><Link to={'/'}>Home</Link></li>
-                                <li><Link to={'/excel'}>View Sheet</Link></li>
-                                <li><Link to={'/script-builder'}>Script Builder</Link></li>
-                                <li><Link to={'/contact'}>Contact Us</Link></li>
-                            </ul>
-                        </div>
-                    </nav>
+                    {/*<nav className = "nav-bg">*/}
+                        {/*<div className="nav-wrapper">*/}
+                            {/*<ul id="nav-mobile" className="right hide-on-med-and-down">*/}
+                                {/*<li><Link to={'/'}>Home</Link></li>*/}
+                                {/*<li><Link to={'/excel'}>View Sheet</Link></li>*/}
+                                {/*<li><Link to={'/script-builder'}>Script Builder</Link></li>*/}
+                                {/*<li><Link to={'/contact'}>Contact Us</Link></li>*/}
+                            {/*</ul>*/}
+                        {/*</div>*/}
+                    {/*</nav>*/}
                     <Switch>
                         <Route exact path='/' component={Main} />
                         <Route path='/about' component={Main} />
