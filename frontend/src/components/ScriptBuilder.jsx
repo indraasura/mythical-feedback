@@ -285,26 +285,18 @@ class ScriptBuilder extends React.Component {
         return (
             <div>
                 <div className={"fixedGenerate"}>
-                    <div
-                        id="modal1"
-                        className="modal">
-                        {/* If you want Bottom Sheet Modal then add
-        bottom-sheet class */}
-                        <div className="modal-content">
-                            <h4>Modal Header</h4>
-                            <div className="input-field col s6">
-                                <input placeholder="Enter your question" id="question_text" type="text"
-                                       className="validate"/>
-                            </div>
-                        </div>
-                        <div className="modal-footer">
+                    <div>
+                        <ul id="slide-out-right" className="sidenav right-side-nav">
+                            <li><a href="#!"><i className="material-icons">cloud</i>First Link With Icon</a></li>
+                            <input placeholder="Enter your question" id="question_text" type="text"
+                                   className="validate"/>
                             <a href="#" className="modal-close waves-effect waves-green btn-flat" onClick={() => {
                                 this.handleInput()
-                            }}>
-                                Submit
-                            </a>
-                        </div>
+                            }}>Submit</a>
+                        </ul>
                     </div>
+
+
                     <div className={"call-button"}>
                         <CallButton handleInput={this.callHandleInput} callPhone={this.callPhone}/>
                     </div>
@@ -415,18 +407,23 @@ class ScriptBuilder extends React.Component {
                         // Such a pain to do it, Double click on node and then enter question name
                         // TODO: Change the modal to toast if possible maybe
                         // TODO: Don't allow double click for diamond
-                        onDoubleClick={(e) => {
+                        onDoubleClick={
+                            (e) => {
                             const iid = e.target.offsetParent.attributes[1].nodeValue;
                             this.setState({
                                 iid: iid,
                                 engine: this.engine
                             }, () => {
-                                let elem = document.getElementById('modal1');
-                                const instance = M.Modal.getInstance(elem);
+                                const elem = document.querySelector(".right-side-nav");
+                                const instance = M.Sidenav.init(elem, {
+                                    edge: "right",
+                                    menuWidth: 400,
+                                });
                                 instance.open();
                                 document.getElementById('question_text').focus();
-                            });
-                        }}
+                                });
+                            }
+                        }
                     >
                         <DiagramWidget className="srd-demo-canvas" smartRouting={true} diagramEngine={this.engine} maxNumberPointsPerLink={0}/>
                     </div>

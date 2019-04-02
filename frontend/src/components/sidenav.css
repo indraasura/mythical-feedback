@@ -2,9 +2,11 @@
     margin: 20px;
     margin-left: 100px;
     height: 85%;
+    z-index: 1;
 }
 .fixed-side-nav {
     width: 60px;
+    z-index: 1;
 }
 .inline-icon {
     vertical-align: middle;
