@@ -1,6 +1,25 @@
 ## Introduction
 
-Django-React Webapp using Django REST Framework.
+Django-React Webapp giving normal users a super-power to create call flow with just drag and drop feature and linking them to decide how the call should flow and then recording user feedback with transcript based on their response.
+
+<img src="https://imgur.com/ITSaL2r.jpg" />
+
+### Why call ?
+
+1. Because it is fun talking to a robot
+2. No need of internet, just speak out loud
+3. It's automatic and much secure
+
+### How it works ?
+
+// TODO
+
+## Technology Used
+
+1. Django with Django REST Framework
+2. ReactJS
+3. React Storm for flow generation
+4. Twilio for call
 
 ## Installation
 
