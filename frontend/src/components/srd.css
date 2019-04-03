@@ -85,3 +85,8 @@ header, main, footer {
 .right-side-nav {
     width: 300px;
 }
+
+span .value {
+    padding-right: 60px;
+    padding-left: 5px;
+}

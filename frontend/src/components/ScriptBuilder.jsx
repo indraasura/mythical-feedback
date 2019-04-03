@@ -21,7 +21,10 @@ import Sidebar from './Sidebar'
 import M from "materialize-css";
 import "materialize-css/dist/css/materialize.min.css";
 import CallButton from "./CallButton";
-import { config } from '../resources/config';
+import {config} from '../resources/config';
+import noUiSlider from 'nouislider/distribute/nouislider';
+import 'nouislider/distribute/nouislider.css';
+import wNumb from 'wnumb/wNumb';
 
 const ShareToast = '<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
     'https://127.0.0.1:8000/static/css/call.css\n' +
@@ -71,6 +74,28 @@ class ScriptBuilder extends React.Component {
             custom_model.deSerializeDiagram(JSON.parse(str), this.engine);
             this.engine.setDiagramModel(custom_model);
         }
+    }
+
+    componentDidMount() {
+        const slider = document.getElementById('record-time');
+        noUiSlider.create(slider, {
+            start: [20, 80],
+            connect: true,
+            step: 1,
+            orientation: 'horizontal', // 'horizontal' or 'vertical'
+            range: {
+                'min': 1,
+                'max': 10
+            },   format: wNumb({
+                decimals: 0
+            })
+
+        });
+
+        // Thanks to https://github.com/Dogfalo/materialize/issues/6036#issuecomment-409690482
+        // Before this the slider was not showing any numerical tooltip
+        const array_of_dom_elements = document.querySelectorAll("input[type=range]");
+        M.Range.init(array_of_dom_elements);
     }
 
     componentWillUnmount() {
@@ -286,13 +311,36 @@ class ScriptBuilder extends React.Component {
             <div>
                 <div className={"fixedGenerate"}>
                     <div>
-                        <ul id="slide-out-right" className="sidenav right-side-nav">
-                            <li><a href="#!"><i className="material-icons">cloud</i>First Link With Icon</a></li>
-                            <input placeholder="Enter your question" id="question_text" type="text"
-                                   className="validate"/>
-                            <a href="#" className="modal-close waves-effect waves-green btn-flat" onClick={() => {
-                                this.handleInput()
-                            }}>Submit</a>
+                        <ul id="slide-out-right" className="sidenav right-side-nav" style={{padding: "20px"}}>
+                            <li>
+                                <div className="subheader" style={{}}>Question</div>
+                                <input placeholder="Enter your question" id="question_text" type="text"
+                                       className="validate"/>
+                            </li>
+                            <li>
+                                <div className="subheader" style={{}}>Voice Gender</div>
+                                <p>
+                                    <label>
+                                        <input name="voice" type="radio" checked/>
+                                        <span>Male</span>
+                                    </label>
+                                    <label>
+                                        <input name="voice" type="radio"/>
+                                        <span>Female</span>
+                                    </label>
+                                </p>
+                            </li>
+                            <li>
+                                <div className="subheader" style={{}}>Recording Time</div>
+                                <p className="range-field">
+                                    <input type="range" id="record-time" min="1" max="10"/>
+                                </p>
+                            </li>
+                            <li>
+                                <a href="#" className="modal-close waves-effect waves-green btn-flat" onClick={() => {
+                                    this.handleInput()
+                                }}>Submit</a>
+                            </li>
                         </ul>
                     </div>
 
@@ -306,12 +354,12 @@ class ScriptBuilder extends React.Component {
                        }}
                        style={{backgroundColor: "#393939"}}>
                         {this.state.isLoading ? <div className="progress button-progress">
-                            <div className="indeterminate"> </div>
+                            <div className="indeterminate"></div>
                         </div> : null}
                         <i className="material-icons right">cloud</i>Generate</a>
                 </div>
                 {(this.state.localStorageLoader) ? <div className={"fixedLoader"} id={"localStorageLoader"}>
-                    <div className={"loadingspinner"}> </div>
+                    <div className={"loadingspinner"}></div>
                 </div> : null}
                 <div className="content">
                     <Sidebar changeScript={this.changeScript}/>
@@ -409,23 +457,24 @@ class ScriptBuilder extends React.Component {
                         // TODO: Don't allow double click for diamond
                         onDoubleClick={
                             (e) => {
-                            const iid = e.target.offsetParent.attributes[1].nodeValue;
-                            this.setState({
-                                iid: iid,
-                                engine: this.engine
-                            }, () => {
-                                const elem = document.querySelector(".right-side-nav");
-                                const instance = M.Sidenav.init(elem, {
-                                    edge: "right",
-                                    menuWidth: 400,
-                                });
-                                instance.open();
-                                document.getElementById('question_text').focus();
+                                const iid = e.target.offsetParent.attributes[1].nodeValue;
+                                this.setState({
+                                    iid: iid,
+                                    engine: this.engine
+                                }, () => {
+                                    const elem = document.querySelector(".right-side-nav");
+                                    const instance = M.Sidenav.init(elem, {
+                                        edge: "right",
+                                        menuWidth: 400,
+                                    });
+                                    instance.open();
+                                    document.getElementById('question_text').focus();
                                 });
                             }
                         }
                     >
-                        <DiagramWidget className="srd-demo-canvas" smartRouting={true} diagramEngine={this.engine} maxNumberPointsPerLink={0}/>
+                        <DiagramWidget className="srd-demo-canvas" smartRouting={true} diagramEngine={this.engine}
+                                       maxNumberPointsPerLink={0}/>
                     </div>
                 </div>
             </div>
