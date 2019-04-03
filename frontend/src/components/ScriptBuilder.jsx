@@ -79,7 +79,7 @@ class ScriptBuilder extends React.Component {
     componentDidMount() {
         const slider = document.getElementById('record-time');
         noUiSlider.create(slider, {
-            start: [20, 80],
+            start: [1, 10],
             connect: true,
             step: 1,
             orientation: 'horizontal', // 'horizontal' or 'vertical'
@@ -333,7 +333,7 @@ class ScriptBuilder extends React.Component {
                             <li>
                                 <div className="subheader" style={{}}>Recording Time</div>
                                 <p className="range-field">
-                                    <input type="range" id="record-time" min="1" max="10"/>
+                                    <input type="range" step="1" id="record-time" min="1" max="10"/>
                                 </p>
                             </li>
                             <li>
@@ -457,19 +457,21 @@ class ScriptBuilder extends React.Component {
                         // TODO: Don't allow double click for diamond
                         onDoubleClick={
                             (e) => {
-                                const iid = e.target.offsetParent.attributes[1].nodeValue;
-                                this.setState({
-                                    iid: iid,
-                                    engine: this.engine
-                                }, () => {
-                                    const elem = document.querySelector(".right-side-nav");
-                                    const instance = M.Sidenav.init(elem, {
-                                        edge: "right",
-                                        menuWidth: 400,
+                                if (e.target.offsetParent.attributes[1]) {
+                                    const iid = e.target.offsetParent.attributes[1].nodeValue;
+                                    this.setState({
+                                        iid: iid,
+                                        engine: this.engine
+                                    }, () => {
+                                        const elem = document.querySelector(".right-side-nav");
+                                        const instance = M.Sidenav.init(elem, {
+                                            edge: "right",
+                                            menuWidth: 400,
+                                        });
+                                        instance.open();
+                                        document.getElementById('question_text').focus();
                                     });
-                                    instance.open();
-                                    document.getElementById('question_text').focus();
-                                });
+                                }
                             }
                         }
                     >

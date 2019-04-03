@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-// import M from "materialize-css/dist/js/materialize.min.js";
+import M from "materialize-css/dist/js/materialize.min.js";
 import "materialize-css/dist/css/materialize.min.css";
 import TrayWidget from './TrayWidget';
 import TrayItemWidget from './TrayItemWidget';
@@ -63,13 +63,11 @@ class Sidebar extends Component {
         if (this.state.hideIcon === 'keyboard_arrow_left') {
             this.setState({
                 hideIcon: 'keyboard_arrow_right',
-                mainSideNav: null
             });
             elem.style.transform = "translateX(-150%)";
         } else {
             this.setState({
                 hideIcon: 'keyboard_arrow_left',
-                mainSideNav: 'create',
             });
             elem.style.transform = "translateX(0%)";
         }
@@ -86,6 +84,11 @@ class Sidebar extends Component {
             <div>
                 <ul id="slide-out" className="sidenav sidenav-fixed fixed-side-nav"
                     style={{backgroundColor: "#393939"}}>
+                    <li className={"side-hover"}>
+                        <button style={{height: "60px"}} className={"more side-buttons"}>
+                            <div><i className="icon-side material-icons white-text">dashboard</i></div>
+                        </button>
+                    </li>
                     <li className={"side-hover"}>
                         <button style={{height: "60px"}} className={"more side-buttons"} onClick={() => {
                             this.setState({
@@ -117,7 +120,7 @@ class Sidebar extends Component {
                         </button>
                     </li>
                 </ul>
-                <ul id="slide-out" className="subsidenav sidenav sidenav-fixed card-look-side-nav">
+                <ul id="slide-out" className="subsidenav sidenav sidenav-fixed card-look-side-nav" style={{backgroundColor: "white"}}>
                     {(() => {
                         switch (this.state.mainSideNav) {
                             case "create":
