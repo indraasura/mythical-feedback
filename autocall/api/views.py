@@ -120,6 +120,9 @@ class NextCallAPIView(APIView):
 
 
 class SaveCallAPIView(APIView):
+    """
+    Save Call recordings as wav
+    """
 
     def post(self, request, *args, **kwargs):
         survey_response = request.GET.get('response')

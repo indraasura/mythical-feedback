@@ -48,6 +48,7 @@ class ScriptBuilder extends React.Component {
         sideJSON: '',
         localStorageLoader: false,
         redoStack: [],
+        scriptCheck: false,
     };
 
     componentWillMount() {
@@ -105,12 +106,13 @@ class ScriptBuilder extends React.Component {
 
     // TODO: How stupid this function is, stop it, get some help!
     generateJson() {
+        console.log(this.engine.getDiagramModel().serializeDiagram());
         this.setState({
             isLoading: true
         });
 
         // Upload JSON to get it saved
-        fetch(config.API_URL + '/builder/upload/', {
+        fetch(config.API_URL + '/builder/check/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -123,11 +125,13 @@ class ScriptBuilder extends React.Component {
         }).then(response => response.json())
             .then(response => {
                     console.log(response);
-                    if (response.status === 500) {
-                        return ''
+                    if (response.script_status) {
+                        this.setState({
+                            scriptCheck: true
+                        })
                     } else {
                         this.setState({
-                            surveyId: response.id
+                            scriptCheck: false
                         })
                     }
                 },
@@ -138,9 +142,10 @@ class ScriptBuilder extends React.Component {
             this.setState({
                 isLoading: false
             });
-            if (this.state.surveyId !== '') {
+            if (this.state.scriptCheck) {
                 document.getElementById("generate-button").style.backgroundColor = "#4caf50";
-                M.toast({html: ShareToast});
+                // TODO: Make sharable plugin in sidenav
+                // M.toast({html: ShareToast});
             } else {
                 document.getElementById("generate-button").style.backgroundColor = "#f44336";
             }
@@ -440,6 +445,11 @@ class ScriptBuilder extends React.Component {
                                 this.refreshModel();
                             }
 
+                            const node_json = node.serialize();
+                            node_json.extras['node_type'] = data.type;
+                            node.deSerialize(node_json, this.engine);
+                            console.log(node.serialize());
+
                             if (data.type !== 'diamond') {
                                 node.x = points.x;
                                 node.y = points.y;
@@ -476,7 +486,7 @@ class ScriptBuilder extends React.Component {
                         }
                     >
                         <DiagramWidget className="srd-demo-canvas" smartRouting={true} diagramEngine={this.engine}
-                                       maxNumberPointsPerLink={0}/>
+                                       maxNumberPointsPerLink={0} allowLooseLinks={false}/>
                     </div>
                 </div>
             </div>

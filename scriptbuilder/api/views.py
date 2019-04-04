@@ -34,6 +34,72 @@ class ScriptFlowAPIView(generics.ListCreateAPIView):
         return qs
 
 
+class ScriptFlowCheckView(APIView):
+    """
+    To check whether the given script is in working state or not
+    """
+
+    def post(self, request, *args, **kwargs):
+        script_flow_serializer = ScriptBuilderSerializer(data=request.data)
+        if script_flow_serializer.is_valid():
+            script_builder_model = request.data
+            script_status, script_message, script_id = check_script_flow(script_builder_model['script_flow'])
+            return Response({
+                'script_status': script_status,
+                'script_message': script_message,
+                'script_id': script_id,
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(script_flow_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+def check_script_flow(data):
+    """
+    :param data: Script Flow JSON objects with nodes and links
+    :return:  True or False
+    """
+    # 0. Check if JSON is valid or not
+    if 'nodes' not in data or 'links' not in data:
+        return False, "Not a Valid JSON", None
+
+    # 1. Check if there is more than 1 nodes
+    if len(data['nodes']) < 2:
+        return False, "There needs to be more than 1 nodes connected", None
+
+    # 2. Check whether there is only 1 source or not
+    temp = []
+    for node in data['nodes']:
+        temp.append(node['extras']['node_type'])
+    if temp.count('out') > 1:
+        return False, "There is more than one source node", None
+
+    # 3. Check if there is only 1 end or not
+    if temp.count('in') > 1:
+        return False, "There is more than one end node", None
+
+    # 4. With one port there can't be more than 1 link
+    # TODO: This will be changed in v2.0.0 for numbering support with multiple input number
+    temp = {}
+    temp_nodes = set()
+    for link in data['links']:
+        if link['source'] in temp:
+            return 'False', "There can't be any node links to more than 1 node", link['source']
+        else:
+            temp_nodes.add(link['source'])
+            temp_nodes.add(link['target'])
+            temp[link['source']] = link['target']
+
+    # 5. Number of connected nodes is equal to the total nodes
+    #    As if there is no single node present
+    if len(data['nodes']) != len(temp_nodes):
+        return False, "There can't be any loose node in the given flow", None
+
+    # TODO: 6. Check Conditional operator
+
+    # END: Everything is fine
+    return True, "No problem", None
+
+
 class ScriptFlowUploadView(APIView):
 
     def post(self, request, *args, **kwargs):
@@ -49,6 +115,8 @@ class ScriptFlowUploadView(APIView):
             try:
                 for i in data['nodes']:
                     filtered_data[i['id']] = i['name']
+
+                    # Check if we have Source node which have only 1 port with Out
                     if len(i['ports']) == 1 and i['ports'][0]['label'] == 'Out':
                         main_id = i['id']
                 for i in data['links']:
