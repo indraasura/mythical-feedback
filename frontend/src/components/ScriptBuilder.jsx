@@ -112,7 +112,7 @@ class ScriptBuilder extends React.Component {
         });
 
         // Upload JSON to get it saved
-        fetch(config.API_URL + '/builder/check/', {
+        fetch(config.API_URL + '/builder/upload/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -125,13 +125,11 @@ class ScriptBuilder extends React.Component {
         }).then(response => response.json())
             .then(response => {
                     console.log(response);
-                    if (response.script_status) {
-                        this.setState({
-                            scriptCheck: true
-                        })
+                    if (response.status == 500) {
+                        return
                     } else {
                         this.setState({
-                            scriptCheck: false
+                            surveyId: response.id
                         })
                     }
                 },
@@ -232,8 +230,7 @@ class ScriptBuilder extends React.Component {
         localScriptFlow = JSON.parse(localScriptFlow);
         const currentScriptFlow = this.engine.getDiagramModel().serializeDiagram();
         if (localScriptFlow.length > 0 &&
-            localScriptFlow[localScriptFlow.length - 1].links.length === currentScriptFlow.links.length &&
-            localScriptFlow[localScriptFlow.length - 1].nodes.length === currentScriptFlow.nodes.length) {
+            JSON.stringify(localScriptFlow[localScriptFlow.length - 1]) === JSON.stringify(currentScriptFlow)) {
             console.log('Nothing');
             return ''
         } else {
@@ -371,7 +368,14 @@ class ScriptBuilder extends React.Component {
                     <div
                         className="diagram-layer"
                         onMouseUp={event => {
-                            this.saveScriptFlow();
+
+                            // #30: Without set timeout, links were not getting updated in diagram json due to which
+                            // in local storage the target node is null by default
+                            // Keeping it 0 make sure that json gets updated and then serialized diagram json
+                            // will get save in local storage
+                            setTimeout(() => {
+                                this.saveScriptFlow();
+                            }, 0);
                         }}
                         onDrop={event => {
                             const data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
@@ -448,7 +452,6 @@ class ScriptBuilder extends React.Component {
                             const node_json = node.serialize();
                             node_json.extras['node_type'] = data.type;
                             node.deSerialize(node_json, this.engine);
-                            console.log(node.serialize());
 
                             if (data.type !== 'diamond') {
                                 node.x = points.x;
@@ -485,8 +488,13 @@ class ScriptBuilder extends React.Component {
                             }
                         }
                     >
-                        <DiagramWidget className="srd-demo-canvas" smartRouting={true} diagramEngine={this.engine}
-                                       maxNumberPointsPerLink={0} allowLooseLinks={false}/>
+                        <DiagramWidget className="srd-demo-canvas"
+                                       diagramEngine={this.engine}
+                                       smartRouting={true}        // Sharp edges rather than smooth curves
+                                       maxNumberPointsPerLink={0} // Points which breaks the line into 2
+                                       allowLooseLinks={false}    // No loose links without connection
+                                       deleteKeys={[46]}          // Avoid backspace deleting node while typing question
+                        />
                     </div>
                 </div>
             </div>

@@ -68,5 +68,5 @@ button:focus {
     transition-timing-function: ease-in;
 
     /* Quick on the way out */
-    transition: 1s;
+    transition: 0.7s;
 }
