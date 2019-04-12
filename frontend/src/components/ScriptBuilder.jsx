@@ -49,6 +49,7 @@ class ScriptBuilder extends React.Component {
         localStorageLoader: false,
         redoStack: [],
         scriptCheck: false,
+        callTime: '0 sec'
     };
 
     componentWillMount() {
@@ -74,6 +75,7 @@ class ScriptBuilder extends React.Component {
             const custom_model = new DiagramModel();
             custom_model.deSerializeDiagram(JSON.parse(str), this.engine);
             this.engine.setDiagramModel(custom_model);
+            this.calculateCallTime();
         }
     }
 
@@ -102,6 +104,33 @@ class ScriptBuilder extends React.Component {
     componentWillUnmount() {
         // Remove Event Listener once in different component
         document.removeEventListener('keydown', this.keyPressHandler);
+    }
+
+    // TODO: Breaks in cased of conditional case
+    calculateCallTime() {
+        let total_word = 0;
+        let total_response = 0;
+        let final_time = 0;
+        const temp_model = this.engine.getDiagramModel().serializeDiagram();
+        for (let i=0; i<temp_model.nodes.length; i++) {
+            total_word += temp_model.nodes[i].name.split(' ').length;
+            if (temp_model.nodes[i].extras['record_time']) {
+                total_response += parseInt(temp_model.nodes[i].extras['record_time']);
+            } else {
+                total_response += 2;
+            }
+        }
+        console.log('totoal_word', total_word);
+        console.log('total_response', total_response);
+        let call_time = Math.round(total_word / 1.5) + total_response;
+        if (call_time > 60) {
+            final_time = Math.floor(call_time/60) + ' min ' + (call_time % 60) + ' sec';
+        } else {
+            final_time = call_time + ' sec';
+        }
+        this.setState({
+            callTime: final_time
+        })
     }
 
     // TODO: How stupid this function is, stop it, get some help!
@@ -267,6 +296,7 @@ class ScriptBuilder extends React.Component {
         setTimeout(() => {
             this.setState({"localStorageLoader": false});
         }, 1200);
+        this.calculateCallTime();
     }
 
     // Call Button input value to be saved in state
@@ -381,7 +411,11 @@ class ScriptBuilder extends React.Component {
                         {this.state.isLoading ? <div className="progress button-progress">
                             <div className="indeterminate"></div>
                         </div> : null}
-                        <i className="material-icons right">cloud</i>Generate</a>
+                        <i className="material-icons right">cloud</i>Generate
+                    </a><br />
+                    <div className={"call-time tooltipped"} data-position="bottom" data-tooltip="Estimated call time">
+                    <i className="material-icons call-time-icon">access_time</i>{this.state.callTime}
+                    </div>
                 </div>
                 {(this.state.localStorageLoader) ? <div className={"fixedLoader"} id={"localStorageLoader"}>
                     <div className={"loadingspinner"}></div>
