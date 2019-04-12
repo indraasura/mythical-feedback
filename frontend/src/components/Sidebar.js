@@ -96,7 +96,9 @@ class Sidebar extends Component {
         return (
             <div>
                 <div className="card document-name">
-                    <input placeholder="Document Name" id="document_name" type="text" className="document-name-input"/>
+                    <input placeholder="Document Name" id="document_name" type="text" className="document-name-input"
+                           value={this.props.documentName}
+                           onChange={ this.props.documentHandleInput.bind(this) } />
                     <a className={"dropdown-trigger tooltipped"}
                        href={""}
                        data-target='dropdown1'

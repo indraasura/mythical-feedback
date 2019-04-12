@@ -38,18 +38,18 @@ class ScriptBuilder extends React.Component {
         node: null
     };
     state = {
-        input_text: '',
-        iid: '',
-        isLoading: false,
-        callButtonValue: '',
-        surveyId: '',
-        engine: '',
-        responseId: '',
-        sideJSON: '',
-        localStorageLoader: false,
-        redoStack: [],
-        scriptCheck: false,
-        callTime: '0 sec'
+        iid: '',                    // On node double click, save that iid
+        isLoading: false,           // While generating the flow show loading
+        callButtonValue: '',        // Call Button phone number saved here
+        surveyId: 0,                // Unique id for that particular survey
+        engine: '',                 // Engine used for react-storm TODO: Remove it
+        responseId: '',             // Call response id used
+        localStorageLoader: false,  // If local storage is used or not
+        redoStack: [],              // On Undo, push the changes in redoStack
+        scriptCheck: false,         // Script Validity
+        callTime: '0 sec',          // Estimated call time
+        documentName: '',           // Name of the document which you are working on
+        restoreState: false,        // Flag to tell whether we can restore or not
     };
 
     componentWillMount() {
@@ -71,11 +71,9 @@ class ScriptBuilder extends React.Component {
         // Load locally saved data from localStorage
         const localScriptFlow = JSON.parse(localStorage.getItem("script_flow"));
         if (localScriptFlow && localScriptFlow.length > 0) {
-            const str = JSON.stringify(localScriptFlow[localScriptFlow.length - 1]);
-            const custom_model = new DiagramModel();
-            custom_model.deSerializeDiagram(JSON.parse(str), this.engine);
-            this.engine.setDiagramModel(custom_model);
-            this.calculateCallTime();
+            this.setState({
+                restoreState: true
+            })
         }
     }
 
@@ -106,13 +104,40 @@ class ScriptBuilder extends React.Component {
         document.removeEventListener('keydown', this.keyPressHandler);
     }
 
+    closeRestoreCard() {
+        this.setState({
+            restoreState: false
+        })
+    }
+
+    loadLocalStorage() {
+        console.log('YES');
+        const localScriptFlow = JSON.parse(localStorage.getItem("script_flow"));
+        const document_name = localStorage.getItem("document_name");
+        if (localScriptFlow && localScriptFlow.length > 0) {
+            const str = JSON.stringify(localScriptFlow[localScriptFlow.length - 1]);
+            const custom_model = new DiagramModel();
+            custom_model.deSerializeDiagram(JSON.parse(str), this.engine);
+            this.engine.setDiagramModel(custom_model);
+            this.calculateCallTime();
+            this.forceUpdate();
+        }
+
+        if (document_name) {
+            this.setState({
+                documentName: document_name
+            })
+        }
+        this.closeRestoreCard();
+    }
+
     // TODO: Breaks in cased of conditional case
     calculateCallTime() {
         let total_word = 0;
         let total_response = 0;
         let final_time = 0;
         const temp_model = this.engine.getDiagramModel().serializeDiagram();
-        for (let i=0; i<temp_model.nodes.length; i++) {
+        for (let i = 0; i < temp_model.nodes.length; i++) {
             total_word += temp_model.nodes[i].name.split(' ').length;
             if (temp_model.nodes[i].extras['record_time']) {
                 total_response += parseInt(temp_model.nodes[i].extras['record_time']);
@@ -124,7 +149,7 @@ class ScriptBuilder extends React.Component {
         console.log('total_response', total_response);
         let call_time = Math.round(total_word / 1.5) + total_response;
         if (call_time > 60) {
-            final_time = Math.floor(call_time/60) + ' min ' + (call_time % 60) + ' sec';
+            final_time = Math.floor(call_time / 60) + ' min ' + (call_time % 60) + ' sec';
         } else {
             final_time = call_time + ' sec';
         }
@@ -150,6 +175,7 @@ class ScriptBuilder extends React.Component {
             body: JSON.stringify({
                 name: 'Random Name',
                 script_flow: this.engine.getDiagramModel().serializeDiagram(),
+                survey_id: this.state.surveyId
             })
         }).then(response => response.json())
             .then(response => {
@@ -281,8 +307,8 @@ class ScriptBuilder extends React.Component {
         }
         localScriptFlow = JSON.parse(localScriptFlow);
         const currentScriptFlow = this.engine.getDiagramModel().serializeDiagram();
-        if (localScriptFlow.length > 0 &&
-            JSON.stringify(localScriptFlow[localScriptFlow.length - 1]) === JSON.stringify(currentScriptFlow)) {
+        if (JSON.stringify(localScriptFlow[localScriptFlow.length - 1]) === JSON.stringify(currentScriptFlow) ||
+            currentScriptFlow.nodes.length === 0) {
             console.log('Nothing');
             return ''
         } else {
@@ -304,6 +330,13 @@ class ScriptBuilder extends React.Component {
         this.setState({
             callButtonValue: e.target.value
         })
+    };
+
+    documentHandleInput = (e) => {
+        this.setState({
+            documentName: e.target.value
+        });
+        localStorage.setItem('document_name', e.target.value);
     };
 
     callPhone = () => {
@@ -346,9 +379,6 @@ class ScriptBuilder extends React.Component {
         fetch(config.API_URL + '/builder/getit/' + id)
             .then(res => res.json())
             .then(data => {
-                this.setState({
-                    sideJSON: data
-                });
                 const str = JSON.stringify(data['script_flow']);
                 let model2 = new DiagramModel();
                 let obj = JSON.parse(str);
@@ -365,6 +395,14 @@ class ScriptBuilder extends React.Component {
         return (
             <div>
                 <div className={"fixedGenerate"}>
+
+                    {(this.state.restoreState) ? <div className="restore-card">
+                        <span>Previous Session Found</span>
+                        <button className="btn-flat toast-action orange-text" style={{marginleft: "5px"}}
+                                onClick={() => {this.loadLocalStorage()}}>Restore
+                        </button>
+                        <span style={{cursor: "pointer"}} onClick={() => {this.closeRestoreCard()}}><i className="material-icons restore-close-button white-text" style={{marginLeft: "0px", position: "absolute"}}>close</i></span>
+                    </div>: null}
                     <div>
                         <ul id="slide-out-right" className="sidenav right-side-nav" style={{padding: "20px"}}>
                             <li>
@@ -376,11 +414,11 @@ class ScriptBuilder extends React.Component {
                                 <div className="subheader" style={{}}>Voice Gender</div>
                                 <p id={"call-voice"}>
                                     <label>
-                                        <input name="voice" type="radio" value={"male"} id="male_voice" />
+                                        <input name="voice" type="radio" value={"male"} id="male_voice"/>
                                         <span>Male</span>
                                     </label>
                                     <label>
-                                        <input name="voice" type="radio" value={"female"} id="female_voice" />
+                                        <input name="voice" type="radio" value={"female"} id="female_voice"/>
                                         <span>Female</span>
                                     </label>
                                 </p>
@@ -412,16 +450,17 @@ class ScriptBuilder extends React.Component {
                             <div className="indeterminate"></div>
                         </div> : null}
                         <i className="material-icons right">cloud</i>Generate
-                    </a><br />
+                    </a><br/>
                     <div className={"call-time tooltipped"} data-position="bottom" data-tooltip="Estimated call time">
-                    <i className="material-icons call-time-icon">access_time</i>{this.state.callTime}
+                        <i className="material-icons call-time-icon">access_time</i>{this.state.callTime}
                     </div>
                 </div>
                 {(this.state.localStorageLoader) ? <div className={"fixedLoader"} id={"localStorageLoader"}>
                     <div className={"loadingspinner"}></div>
                 </div> : null}
                 <div className="content">
-                    <Sidebar changeScript={this.changeScript}/>
+                    <Sidebar documentName={this.state.documentName} changeScript={this.changeScript}
+                             documentHandleInput={this.documentHandleInput}/>
                     <div
                         className="diagram-layer"
                         onKeyDown={e => {
