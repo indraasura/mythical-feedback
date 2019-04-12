@@ -1,7 +1,9 @@
 .card-look-side-nav {
     margin-left: 60px;
-    height: 85%;
+    /* height: 85% */
+    height: 100%;
     z-index: 1;
+    margin-top: 70px;
 }
 .fixed-side-nav {
     width: 60px;
@@ -69,4 +71,38 @@ button:focus {
 
     /* Quick on the way out */
     transition: 0.7s;
+}
+
+.document-name {
+    position: fixed;
+    margin-left: 70px;
+    z-index: 2;
+    margin-top: 5px;
+    padding: 10px;
+    width: 300px;
+    background-color: #393939;
+    color: white;
+}
+
+.document-name-input {
+    border-bottom: none !important;
+    height: 2rem !important;
+    padding: auto !important;
+    margin: 0 !important;
+    color: white;
+    width: 85% !important;
+}
+
+.document-dropdown {
+    position: absolute;
+    font-size: 3rem;
+    margin-top: -7px;
+}
+
+.document-dropdown-options {
+    left: 0 !important;
+    top: 50px !important;
+    width: 300px !important;
+    background-color: #393939;
+    transform-origin: 10px 10px 10px !important;
 }

@@ -125,8 +125,8 @@ class ScriptBuilder extends React.Component {
         }).then(response => response.json())
             .then(response => {
                     console.log(response);
-                    if (response.status == 500) {
-                        return
+                    if (!response.script_status) {
+                        M.toast({html: response.script_message});
                     } else {
                         this.setState({
                             surveyId: response.id
@@ -147,7 +147,7 @@ class ScriptBuilder extends React.Component {
             } else {
                 document.getElementById("generate-button").style.backgroundColor = "#f44336";
             }
-        }, 3000);
+        }, 1000);
     }
 
     // TODO: Customize input css with multiple input, save it in nodes.extras

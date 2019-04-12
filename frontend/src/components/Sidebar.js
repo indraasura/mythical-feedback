@@ -12,6 +12,7 @@ class Sidebar extends Component {
         builder_json: [],
         mainSideNav: 'create',
         hideIcon: 'keyboard_arrow_left',
+        hideIconText: "close"
     };
 
     componentDidMount() {
@@ -19,11 +20,21 @@ class Sidebar extends Component {
         // const instance = M.Sidenav.init(elem, {
         //     edge: "left",
         //     inDuration: 250
-        // });
+        // // });
+        document.addEventListener('DOMContentLoaded', function () {
+            const elems = document.querySelectorAll('.tooltipped');
+            const instances = M.Tooltip.init(elems, {enterDelay: 300});
+        });
+
+        // TODO: Get some help, change it, do something
+        setTimeout(() => {
+            const elem = document.getElementsByClassName("subsidenav")[0];
+            elem.style.transform = "translateX(3.5%)";
+        }, 5)
+
     }
 
     componentWillMount() {
-
     }
 
     getFileDetails(id, name, func) {
@@ -63,13 +74,15 @@ class Sidebar extends Component {
         if (this.state.hideIcon === 'keyboard_arrow_left') {
             this.setState({
                 hideIcon: 'keyboard_arrow_right',
+                hideIconText: 'open'
             });
             elem.style.transform = "translateX(-150%)";
         } else {
             this.setState({
                 hideIcon: 'keyboard_arrow_left',
+                hideIconText: 'close'
             });
-            elem.style.transform = "translateX(0%)";
+            elem.style.transform = "translateX(3.5%)";
         }
     }
 
@@ -82,51 +95,77 @@ class Sidebar extends Component {
     render() {
         return (
             <div>
+                <div className="card document-name">
+                    <input placeholder="Document Name" id="document_name" type="text" className="document-name-input"/>
+                    <a className={"dropdown-trigger"} href={""} data-target='dropdown1'><i className="material-icons document-dropdown white-text">arrow_drop_down</i></a>
+                    <ul id='dropdown1' className='dropdown-content document-dropdown-options' style={{left: "24px !important;"}}>
+                        <li><a href="#!">one</a></li>
+                        <li><a href="#!">two</a></li>
+                        <li className="divider" tabIndex="-1"></li>
+                        <li><a href="#!">three</a></li>
+                        <li><a href="#!"><i className="material-icons">view_module</i>four</a></li>
+                        <li><a href="#!"><i className="material-icons">cloud</i>five</a></li>
+                    </ul>
+                </div>
                 <ul id="slide-out" className="sidenav sidenav-fixed fixed-side-nav"
                     style={{backgroundColor: "#393939"}}>
                     <li className={"side-hover"}>
-                        <button style={{height: "60px"}} className={"more side-buttons"}>
+                        <button style={{height: "60px"}} className={"more side-buttons tooltipped"}
+                                data-position="right" data-tooltip="Dashboard">
                             <div><i className="icon-side material-icons white-text">dashboard</i></div>
                         </button>
                     </li>
                     <li className={"side-hover"}>
-                        <button style={{height: "60px"}} className={"more side-buttons"} onClick={() => {
-                            this.setState({
-                                mainSideNav: 'create'
-                            })
-                        }}>
+                        <button style={{height: "60px"}} className={"more side-buttons tooltipped"}
+                                data-position="right" data-tooltip="Add Elements"
+                                onClick={() => {
+                                    this.setState({
+                                        mainSideNav: 'create'
+                                    })
+                                }}>
                             <div><i className="icon-side material-icons white-text">add</i></div>
                         </button>
                     </li>
                     <li className={"side-hover"}>
-                        <button style={{height: "60px"}} className={"more side-buttons"} onClick={() => {
-                            this.switchFolderNav()
-                        }}>
+                        <button style={{height: "60px"}} className={"more side-buttons tooltipped"}
+                                data-position="right" data-tooltip="Folder"
+                                onClick={() => {
+                                    this.switchFolderNav()
+                                }}>
                             <div><i className="icon-side material-icons white-text">folder</i></div>
                         </button>
                     </li>
                     <li className={"side-hover"}>
-                        <button style={{height: "60px"}} className={"more side-buttons"} onClick={() => {
-                            this.switchSettingsNav()
-                        }}>
+                        <button style={{height: "60px"}} className={"more side-buttons tooltipped"}
+                                data-position="right" data-tooltip="Settings"
+                                onClick={() => {
+                                    this.switchSettingsNav()
+                                }}>
                             <div><i className="icon-side material-icons white-text">settings</i></div>
                         </button>
                     </li>
                     <li className={"side-hover bottom-hide-nav"}>
-                        <button style={{height: "60px"}} className={"more side-buttons"} onClick={() => {
-                            this.hideNav()
-                        }}>
+                        <button style={{height: "60px"}} className={"more side-buttons tooltipped"}
+                                data-position="right" data-tooltip={this.state.hideIconText}
+                                onClick={() => {
+                                    this.hideNav()
+                                }}>
                             <div><i className="icon-side material-icons white-text">{this.state.hideIcon}</i></div>
                         </button>
                     </li>
                 </ul>
-                <ul id="slide-out" className="subsidenav sidenav sidenav-fixed card-look-side-nav" style={{backgroundColor: "white"}}>
+                <ul id="slide-out" className="subsidenav sidenav sidenav-fixed card-look-side-nav"
+                    style={{backgroundColor: "white"}}>
                     {(() => {
                         switch (this.state.mainSideNav) {
                             case "create":
                                 return (
                                     <>
-                                        <li><div className="subheader" style={{paddingLeft: "20px"}}>Tray (Drag and drop)</div></li>
+                                        <li>
+                                            <div className="subheader" style={{paddingLeft: "20px"}}>Tray (Drag and
+                                                drop)
+                                            </div>
+                                        </li>
                                         <li>
                                             <TrayWidget>
                                                 <TrayItemWidget model={{type: 'in'}} name="End Node" color="peru"/>
@@ -144,7 +183,9 @@ class Sidebar extends Component {
                                 return (
                                     (this.state.builder_json.length > 0) ?
                                         <div>
-                                            <li><div className="subheader" style={{paddingLeft: "20px"}}>Recents</div></li>
+                                            <li>
+                                                <div className="subheader" style={{paddingLeft: "20px"}}>Recents</div>
+                                            </li>
                                             <li>
                                                 {this.state.builder_json.map((item, index) => {
                                                     return (
@@ -175,7 +216,9 @@ class Sidebar extends Component {
                                 );
                             case "settings":
                                 return (
-                                    <li><div className="subheader" style={{paddingLeft: "20px"}}>Settings</div></li>
+                                    <li>
+                                        <div className="subheader" style={{paddingLeft: "20px"}}>Settings</div>
+                                    </li>
                                 );
                             default:
                                 return ("");

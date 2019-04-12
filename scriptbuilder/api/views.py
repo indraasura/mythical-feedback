@@ -105,43 +105,52 @@ class ScriptFlowUploadView(APIView):
     def post(self, request, *args, **kwargs):
         script_flow_serializer = ScriptBuilderSerializer(data=request.data)
         if script_flow_serializer.is_valid():
-            script_flow_serializer.save()
-            script_builder_model = script_flow_serializer.data
-            main_id = ''
-            temp_json = {}
-            filtered_data = {}
-            final_list = []
-            data = script_builder_model['script_flow']
-            try:
-                for i in data['nodes']:
-                    filtered_data[i['id']] = i['name']
+            script_status, script_message, script_id = check_script_flow(script_flow_serializer.data['script_flow'])
+            if script_status:
+                script_flow_serializer.save()
+                script_builder_model = script_flow_serializer.data
+                main_id = ''
+                temp_json = {}
+                filtered_data = {}
+                final_list = []
+                data = script_builder_model['script_flow']
+                try:
+                    for i in data['nodes']:
+                        filtered_data[i['id']] = i['name']
 
-                    # Check if we have Source node which have only 1 port with Out
-                    if len(i['ports']) == 1 and i['ports'][0]['label'] == 'Out':
-                        main_id = i['id']
-                for i in data['links']:
-                    temp_json[i['source']] = i['target']
-                for i in range(len(temp_json) + 1):
-                    final_list.append({
-                        'id': main_id,
-                        'question': filtered_data[main_id]
-                    })
-                    main_id = temp_json[main_id] if main_id in temp_json else None
-                final_data = {
-                    'name': script_builder_model['name'],
-                    'id': script_builder_model['id'],
-                    'data': final_list
-                }
-                script = ScriptBuilder.objects.get(id=script_builder_model['id'])
-                survey_model = Survey.objects.create(script=script, script_flow=final_data)
-                survey_model.save()
-            except:
-                script = ScriptBuilder.objects.get(id=script_builder_model['id'])
-                script.delete()
-                return Response({'status': 500, 'message': "JSON is not valid"})
-            return Response({
-                'id': survey_model.id
-            }, status=status.HTTP_201_CREATED)
+                        # Check if we have Source node which have only 1 port with Out
+                        if len(i['ports']) == 1 and i['ports'][0]['label'] == 'Out':
+                            main_id = i['id']
+                    for i in data['links']:
+                        temp_json[i['source']] = i['target']
+                    for i in range(len(temp_json) + 1):
+                        final_list.append({
+                            'id': main_id,
+                            'question': filtered_data[main_id]
+                        })
+                        main_id = temp_json[main_id] if main_id in temp_json else None
+                    final_data = {
+                        'name': script_builder_model['name'],
+                        'id': script_builder_model['id'],
+                        'data': final_list
+                    }
+                    script = ScriptBuilder.objects.get(id=script_builder_model['id'])
+                    survey_model = Survey.objects.create(script=script, script_flow=final_data)
+                    survey_model.save()
+                except:
+                    script = ScriptBuilder.objects.get(id=script_builder_model['id'])
+                    script.delete()
+                    return Response({'status': 500, 'message': "JSON is not valid"})
+                return Response({
+                    'id': survey_model.id,
+                    'script_status': True
+                }, status=status.HTTP_201_CREATED)
+            else:
+                return Response({
+                    'script_status': script_status,
+                    'script_message': script_message,
+                    'script_id': script_id,
+                }, status=status.HTTP_200_OK)
         else:
             return Response(script_flow_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
