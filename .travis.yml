@@ -8,6 +8,9 @@ python:
 services:
   - postgresql
 
+addons:
+  postgresql: "9.4"
+
 env:
   -DJANGO=1.11 DB=postgresql
 
