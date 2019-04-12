@@ -87,7 +87,7 @@ class ScriptBuilder extends React.Component {
             range: {
                 'min': 1,
                 'max': 10
-            },   format: wNumb({
+            }, format: wNumb({
                 decimals: 0
             })
 
@@ -161,11 +161,13 @@ class ScriptBuilder extends React.Component {
                 document.getElementById('question_text').value = '';
                 this.engine.repaintCanvas();
                 console.log(this.engine.getDiagramModel().serializeDiagram());
-            }, 1000)
+                this.saveScriptFlow();
+            }, 200)
         } else {
             this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
             document.getElementById('question_text').value = '';
             this.engine.repaintCanvas();
+            this.saveScriptFlow();
         }
     }
 
@@ -367,6 +369,17 @@ class ScriptBuilder extends React.Component {
                     <Sidebar changeScript={this.changeScript}/>
                     <div
                         className="diagram-layer"
+                        onKeyDown={e => {
+                            console.log(e.key);
+                            if (e.key === 'Delete') {
+                                // Save after few milliseconds once the json is updated, when we delete the node
+                                setTimeout(() => {
+                                    this.saveScriptFlow();
+                                }, 100);
+                            }
+                        }}
+                        // To be able to track the key pressed we need tabIndex=0
+                        tabIndex="0"
                         onMouseUp={event => {
 
                             // #30: Without set timeout, links were not getting updated in diagram json due to which
@@ -470,7 +483,7 @@ class ScriptBuilder extends React.Component {
                         // TODO: Don't allow double click for diamond
                         onDoubleClick={
                             (e) => {
-                                if (e.target.offsetParent.attributes[1]) {
+                                if (e.target.offsetParent && e.target.offsetParent.attributes[1]) {
                                     const iid = e.target.offsetParent.attributes[1].nodeValue;
                                     this.setState({
                                         iid: iid,
