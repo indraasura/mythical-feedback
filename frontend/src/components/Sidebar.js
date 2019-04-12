@@ -97,7 +97,10 @@ class Sidebar extends Component {
             <div>
                 <div className="card document-name">
                     <input placeholder="Document Name" id="document_name" type="text" className="document-name-input"/>
-                    <a className={"dropdown-trigger"} href={""} data-target='dropdown1'><i className="material-icons document-dropdown white-text">arrow_drop_down</i></a>
+                    <a className={"dropdown-trigger tooltipped"}
+                       href={""}
+                       data-target='dropdown1'
+                       data-position="bottom" data-tooltip="Options"><i className="material-icons document-dropdown white-text">arrow_drop_down</i></a>
                     <ul id='dropdown1' className='dropdown-content document-dropdown-options' style={{left: "24px !important;"}}>
                         <li><a href="#!">one</a></li>
                         <li><a href="#!">two</a></li>

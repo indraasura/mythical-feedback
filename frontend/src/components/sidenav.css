@@ -93,6 +93,11 @@ button:focus {
     width: 85% !important;
 }
 
+.document-name-input:focus {
+    border-bottom: none!important;
+    box-shadow: none!important;
+}
+
 .document-dropdown {
     position: absolute;
     font-size: 3rem;

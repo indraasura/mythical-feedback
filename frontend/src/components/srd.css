@@ -23,9 +23,9 @@ header, main, footer {
 
 .fixedGenerate {
     position: fixed;
-    top: 20px;
+    top: 0;
     right: 0;
-    padding: 30px;
+    padding: 7px;
     z-index: 999;
 }
 

@@ -22,7 +22,7 @@ import M from "materialize-css";
 import "materialize-css/dist/css/materialize.min.css";
 import CallButton from "./CallButton";
 import {config} from '../resources/config';
-import noUiSlider from 'nouislider/distribute/nouislider';
+import noUiSlider from 'nouislider';
 import 'nouislider/distribute/nouislider.css';
 import wNumb from 'wnumb/wNumb';
 
@@ -80,13 +80,13 @@ class ScriptBuilder extends React.Component {
     componentDidMount() {
         const slider = document.getElementById('record-time');
         noUiSlider.create(slider, {
-            start: [1, 10],
+            start: 2,
             connect: true,
-            step: 1,
+            step: 5,
             orientation: 'horizontal', // 'horizontal' or 'vertical'
             range: {
                 'min': 1,
-                'max': 10
+                'max': 100
             }, format: wNumb({
                 decimals: 0
             })
@@ -154,21 +154,42 @@ class ScriptBuilder extends React.Component {
     handleInput() {
         const iid = this.state.iid;
         let engineState = this.state.engine.getDiagramModel().serializeDiagram();
+        console.log(document.querySelector('input[name="voice"]:checked').value);
+        console.log(document.getElementById('record-time').value);
         if (!engineState.nodes.hasOwnProperty(iid)) {
             setTimeout(() => {
                 engineState = this.engine.getDiagramModel().serializeDiagram();
                 this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
+                this.engine.getDiagramModel().nodes[iid]['extras']['record_time'] = document.getElementById('record-time').value;
+                this.engine.getDiagramModel().nodes[iid]['extras']['voice_gender'] = document.querySelector('input[name="voice"]:checked').value;
                 document.getElementById('question_text').value = '';
+                document.getElementById('record-time').value = 2;
+                document.getElementById('male_voice').checked = false;
+                document.getElementById('female_voice').checked = false;
+
                 this.engine.repaintCanvas();
                 console.log(this.engine.getDiagramModel().serializeDiagram());
                 this.saveScriptFlow();
             }, 200)
         } else {
             this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
+            this.engine.getDiagramModel().nodes[iid]['extras']['record_time'] = document.getElementById('record-time').value;
+            this.engine.getDiagramModel().nodes[iid]['extras']['voice_gender'] = document.querySelector('input[name="voice"]:checked').value;
             document.getElementById('question_text').value = '';
+            document.getElementById('record-time').value = 2;
+            document.getElementById('male_voice').checked = false;
+            document.getElementById('female_voice').checked = false;
+            
             this.engine.repaintCanvas();
             this.saveScriptFlow();
         }
+
+        const elem = document.querySelector(".right-side-nav");
+        const instance = M.Sidenav.init(elem, {
+            edge: "right",
+            menuWidth: 400,
+        });
+        instance.close();
     }
 
     getDistributedModel(engine, model) {
@@ -323,13 +344,13 @@ class ScriptBuilder extends React.Component {
                             </li>
                             <li>
                                 <div className="subheader" style={{}}>Voice Gender</div>
-                                <p>
+                                <p id={"call-voice"}>
                                     <label>
-                                        <input name="voice" type="radio" checked/>
+                                        <input name="voice" type="radio" value={"male"} id="male_voice" />
                                         <span>Male</span>
                                     </label>
                                     <label>
-                                        <input name="voice" type="radio"/>
+                                        <input name="voice" type="radio" value={"female"} id="female_voice" />
                                         <span>Female</span>
                                     </label>
                                 </p>
@@ -489,13 +510,27 @@ class ScriptBuilder extends React.Component {
                                         iid: iid,
                                         engine: this.engine
                                     }, () => {
+                                        const temp_model = this.engine.getDiagramModel();
+                                        document.getElementById('question_text').value = temp_model.nodes[iid].name;
+                                        if (temp_model.nodes[iid]['extras']['record_time']) {
+                                            document.getElementById('record-time').value = temp_model.nodes[iid]['extras']['record_time'];
+                                        } else {
+                                            document.getElementById('record-time').value = 2;
+                                        }
+                                        if (temp_model.nodes[iid]['extras']['voice_gender']) {
+                                            const radiobtn = document.getElementById(temp_model.nodes[iid]['extras']['voice_gender'] + '_voice');
+                                            radiobtn.checked = true;
+                                        } else {
+                                            const radiobtn = document.getElementById('male_voice');
+                                            radiobtn.checked = true;
+                                        }
+                                        document.getElementById('question_text').focus();
                                         const elem = document.querySelector(".right-side-nav");
                                         const instance = M.Sidenav.init(elem, {
                                             edge: "right",
                                             menuWidth: 400,
                                         });
                                         instance.open();
-                                        document.getElementById('question_text').focus();
                                     });
                                 }
                             }
