@@ -26,11 +26,11 @@ class Sidebar extends Component {
             const instances = M.Tooltip.init(elems, {enterDelay: 300});
         });
 
-        // TODO: Get some help, change it, do something
-        setTimeout(() => {
-            const elem = document.getElementsByClassName("subsidenav")[0];
-            elem.style.transform = "translateX(3.5%)";
-        }, 5)
+        // // TODO: Get some help, change it, do something
+        // setTimeout(() => {
+        //     const elem = document.getElementsByClassName("subsidenav")[0];
+        //     elem.style.transform = "translateX(3.5%)";
+        // }, 5)
 
     }
 
@@ -82,7 +82,7 @@ class Sidebar extends Component {
                 hideIcon: 'keyboard_arrow_left',
                 hideIconText: 'close'
             });
-            elem.style.transform = "translateX(3.5%)";
+            elem.style.transform = "translateX(0%)";
         }
     }
 

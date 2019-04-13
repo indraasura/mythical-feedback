@@ -45,10 +45,11 @@ class MakeCallAPIView(APIView):
     def post(self, request, *args, **kwargs):
         print(request.data)
         to_phonenumber = request.data['to_phonenumber']
-        survey = request.data['survey']
+        survey_script = request.data['survey']
+        survey_model = Survey.objects.get(script_id=survey_script)
+        survey = survey_model.id
         from_phonenumber = '+12019044102'
 
-        survey_model = Survey.objects.get(id=survey)
         survey_response = SurveyResponse.objects.create(survey=survey_model, phone_number=to_phonenumber,
                                                         call_status='IN-PROGRESS')
         survey_response.save()

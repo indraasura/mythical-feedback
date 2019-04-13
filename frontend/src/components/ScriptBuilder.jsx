@@ -50,6 +50,7 @@ class ScriptBuilder extends React.Component {
         callTime: '0 sec',          // Estimated call time
         documentName: '',           // Name of the document which you are working on
         restoreState: false,        // Flag to tell whether we can restore or not
+        saveColor: '#393939'        // Color based on whether it is saved or not
     };
 
     componentWillMount() {
@@ -107,13 +108,17 @@ class ScriptBuilder extends React.Component {
     closeRestoreCard() {
         this.setState({
             restoreState: false
-        })
+        });
+        localStorage.removeItem('script_flow');
+        localStorage.removeItem('document_name');
+        localStorage.removeItem('document_id');
     }
 
     loadLocalStorage() {
         console.log('YES');
         const localScriptFlow = JSON.parse(localStorage.getItem("script_flow"));
         const document_name = localStorage.getItem("document_name");
+        const document_id = localStorage.getItem("document_id");
         if (localScriptFlow && localScriptFlow.length > 0) {
             const str = JSON.stringify(localScriptFlow[localScriptFlow.length - 1]);
             const custom_model = new DiagramModel();
@@ -128,7 +133,16 @@ class ScriptBuilder extends React.Component {
                 documentName: document_name
             })
         }
-        this.closeRestoreCard();
+        if (document_id && document_id !== "0") {
+            console.log('documentid', document_id)
+            this.setState({
+                saveColor: '#df9300',
+                surveyId: parseInt(document_id)
+            });
+        }
+        this.setState({
+            restoreState: false
+        });
     }
 
     // TODO: Breaks in cased of conditional case
@@ -160,47 +174,93 @@ class ScriptBuilder extends React.Component {
 
     // TODO: How stupid this function is, stop it, get some help!
     generateJson() {
+        if (this.state.documentName === '') {
+            M.toast({html: 'Document name not specified'}, 1000);
+            return
+        }
+
         console.log(this.engine.getDiagramModel().serializeDiagram());
         this.setState({
-            isLoading: true
+            isLoading: true,
         });
-
-        // Upload JSON to get it saved
-        fetch(config.API_URL + '/builder/upload/', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: 'Random Name',
-                script_flow: this.engine.getDiagramModel().serializeDiagram(),
-                survey_id: this.state.surveyId
-            })
-        }).then(response => response.json())
-            .then(response => {
-                    console.log(response);
-                    if (!response.script_status) {
-                        M.toast({html: response.script_message});
-                    } else {
-                        this.setState({
-                            surveyId: response.id
-                        })
-                    }
+        console.log('surveyID', this.state.surveyId)
+        if (this.state.surveyId === 0) {
+            // Upload JSON to get it saved
+            fetch(config.API_URL + '/builder/upload/', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
                 },
-                (error) => {
-                    M.toast({html: error});
-                });
+                body: JSON.stringify({
+                    name: this.state.documentName,
+                    script_flow: this.engine.getDiagramModel().serializeDiagram(),
+                })
+            }).then(response => response.json())
+                .then(response => {
+                        console.log(response);
+                        if (!response.script_status) {
+                            this.setState({
+                                scriptCheck: false
+                            });
+                            M.toast({html: response.script_message});
+                        } else {
+                            this.setState({
+                                surveyId: response.id,
+                                scriptCheck: true
+                            });
+                            localStorage.setItem('document_id', response.id);
+                        }
+                    },
+                    (error) => {
+                        M.toast({html: "Unexpected Error"});
+                    });
+        } else {
+            // Update JSON to get it saved
+            fetch(config.API_URL + '/builder/getit/' + this.state.surveyId, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: this.state.documentName,
+                    script_flow: this.engine.getDiagramModel().serializeDiagram(),
+                })
+            }).then(response => response.json())
+                .then(response => {
+                        console.log(response);
+                        if (!response.script_status) {
+                            this.setState({
+                                scriptCheck: false
+                            });
+                            M.toast({html: response.script_message});
+                        } else {
+                            this.setState({
+                                surveyId: response.id,
+                                scriptCheck: true
+                            })
+                        }
+                    },
+                    (error) => {
+                        M.toast({html: "Unexpected Error"});
+                    });
+        }
+
         setTimeout(() => {
             this.setState({
                 isLoading: false
             });
             if (this.state.scriptCheck) {
-                document.getElementById("generate-button").style.backgroundColor = "#4caf50";
+                this.setState({
+                    saveColor: "#4caf50"
+                });
                 // TODO: Make sharable plugin in sidenav
                 // M.toast({html: ShareToast});
             } else {
-                document.getElementById("generate-button").style.backgroundColor = "#f44336";
+                this.setState({
+                    saveColor: "#f44336"
+                });
             }
         }, 1000);
     }
@@ -234,7 +294,7 @@ class ScriptBuilder extends React.Component {
             document.getElementById('record-time').value = 2;
             document.getElementById('male_voice').checked = false;
             document.getElementById('female_voice').checked = false;
-            
+
             this.engine.repaintCanvas();
             this.saveScriptFlow();
         }
@@ -304,14 +364,35 @@ class ScriptBuilder extends React.Component {
         let localScriptFlow = localStorage.getItem("script_flow");
         if (!localScriptFlow) {
             localStorage.setItem("script_flow", JSON.stringify([]));
+            localStorage.setItem("document_id", "0");
+            localScriptFlow = '[]';
         }
         localScriptFlow = JSON.parse(localScriptFlow);
         const currentScriptFlow = this.engine.getDiagramModel().serializeDiagram();
+
+        currentScriptFlow.offsetX = 0;
+        currentScriptFlow.offsetY = 0;
+        currentScriptFlow.zoom = 100;
+        currentScriptFlow.gridSize = 0;
+
+        for (let i = 0; i < currentScriptFlow.nodes.length; i++) {
+            currentScriptFlow.nodes[i].selected = false;
+        }
+        for (let i = 0; i < currentScriptFlow.links.length; i++) {
+            currentScriptFlow.links[i].selected = false;
+        }
+
+        console.log(currentScriptFlow, JSON.stringify(localScriptFlow[localScriptFlow.length - 1]) === JSON.stringify(currentScriptFlow));
         if (JSON.stringify(localScriptFlow[localScriptFlow.length - 1]) === JSON.stringify(currentScriptFlow) ||
             currentScriptFlow.nodes.length === 0) {
             console.log('Nothing');
             return ''
         } else {
+            if (this.state.surveyId !== 0) {
+                this.setState({
+                    saveColor: '#df9300'
+                });
+            }
             this.setState({"localStorageLoader": true});
         }
         if (localScriptFlow.length > 50) {
@@ -396,13 +477,24 @@ class ScriptBuilder extends React.Component {
             <div>
                 <div className={"fixedGenerate"}>
 
-                    {(this.state.restoreState) ? <div className="restore-card">
-                        <span>Previous Session Found</span>
-                        <button className="btn-flat toast-action orange-text" style={{marginleft: "5px"}}
-                                onClick={() => {this.loadLocalStorage()}}>Restore
-                        </button>
-                        <span style={{cursor: "pointer"}} onClick={() => {this.closeRestoreCard()}}><i className="material-icons restore-close-button white-text" style={{marginLeft: "0px", position: "absolute"}}>close</i></span>
-                    </div>: null}
+                    {(this.state.restoreState) ?
+                        <>
+                            <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 2}}></div>
+                            <div className="show" id={"custom-toast"}>
+                                <span>Previous Session Found</span>
+                                <button className="btn-flat toast-action orange-text"
+                                        style={{marginleft: "5px"}}
+                                        onClick={() => {
+                                            this.loadLocalStorage()
+                                        }}>Restore
+                                </button>
+                                <span style={{cursor: "pointer"}} onClick={() => {
+                                    this.closeRestoreCard()
+                                }}><i className="material-icons restore-close-button white-text"
+                                      style={{marginLeft: "0px", position: "absolute"}}>close</i></span>
+                            </div>
+                        </>
+                        : null}
                     <div>
                         <ul id="slide-out-right" className="sidenav right-side-nav" style={{padding: "20px"}}>
                             <li>
@@ -441,11 +533,11 @@ class ScriptBuilder extends React.Component {
                     <div className={"call-button"}>
                         <CallButton handleInput={this.callHandleInput} callPhone={this.callPhone}/>
                     </div>
-                    <a className="waves-effect btn-large" id={"generate-button"}
+                    <a className="btn-large" id={"generate-button"}
                        onClick={() => {
                            this.generateJson()
                        }}
-                       style={{backgroundColor: "#393939"}}>
+                       style={{backgroundColor: this.state.saveColor}}>
                         {this.state.isLoading ? <div className="progress button-progress">
                             <div className="indeterminate"></div>
                         </div> : null}
