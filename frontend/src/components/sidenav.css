@@ -111,3 +111,9 @@ button:focus {
     background-color: #393939;
     transform-origin: 10px 10px 10px !important;
 }
+
+.center-icon {
+    display: inline-flex;
+    vertical-align: top;
+    margin-right: 10px;
+}

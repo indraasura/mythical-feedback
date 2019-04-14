@@ -168,3 +168,36 @@ span .value {
     from {bottom: 30px; opacity: 1;}
     to {bottom: 0; opacity: 0;}
 }
+
+#dropdown1 li:hover {
+    background-color: #323232;
+}
+
+.call-progress-animation {
+    background: #fff;
+    position: relative;
+    margin: 0 auto;
+    animation: play 2s ease infinite;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+}
+
+@keyframes play {
+
+    0% {
+        transform: scale(1);
+    }
+    15% {
+        box-shadow: 0 0 0 5px rgba(0, 230, 118, 0.4)
+    }
+    25% {
+        box-shadow: 0 0 0 10px rgba(0, 230, 118, 0.4), 0 0 0 20px rgba(0, 230, 118, 0.2);
+    }
+    25% {
+        box-shadow: 0 0 0 15px rgba(0, 230, 118, 0.4), 0 0 0 30px rgba(0, 230, 118, 0.2);
+    }
+
+}

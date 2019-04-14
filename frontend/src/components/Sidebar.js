@@ -104,16 +104,17 @@ class Sidebar extends Component {
                        data-target='dropdown1'
                        data-position="bottom" data-tooltip="Options"><i className="material-icons document-dropdown white-text">arrow_drop_down</i></a>
                     <ul id='dropdown1' className='dropdown-content document-dropdown-options' style={{left: "24px !important;"}}>
-                        <li><a href="#!">one</a></li>
-                        <li><a href="#!">two</a></li>
-                        <li className="divider" tabIndex="-1"></li>
-                        <li><a href="#!">three</a></li>
-                        <li><a href="#!"><i className="material-icons">view_module</i>four</a></li>
-                        <li><a href="#!"><i className="material-icons">cloud</i>five</a></li>
+                        <li className={"white-text"} onClick={() => {this.props.resetHandler()}}><span style={{cursor: "pointer"}}><i className="center-icon material-icons">create</i>new</span></li>
                     </ul>
                 </div>
                 <ul id="slide-out" className="sidenav sidenav-fixed fixed-side-nav"
                     style={{backgroundColor: "#393939"}}>
+                    <li className={"side-hover"}>
+                        <button style={{height: "60px", marginLeft: "-2px"}} className={"more tooltipped"}
+                                data-position="right" data-tooltip="Home">
+                            <div><img style={{width: "50px"}} src={"https://imgur.com/wOOWWqm.png"} /></div>
+                        </button>
+                    </li>
                     <li className={"side-hover"}>
                         <button style={{height: "60px"}} className={"more side-buttons tooltipped"}
                                 data-position="right" data-tooltip="Dashboard">

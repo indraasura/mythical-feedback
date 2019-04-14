@@ -33,7 +33,7 @@ class UpdateStatusCallAPIView(APIView):
         survey_id = request.GET.get('survey')
         survey_model = Survey.objects.get(id=survey_id)
         survey_response_model = SurveyResponse.objects.get(survey=survey_model)
-        survey_response_model.call_status='DONE'
+        survey_response_model.call_status = request.POST['CallStatus']
         survey_response_model.save()
 
         return framework_response({'message': 'Done'})
@@ -60,6 +60,7 @@ class MakeCallAPIView(APIView):
             to=to_phonenumber,
             from_=from_phonenumber,
             status_callback=WEBSITE_URL + '/status/?survey=' + str(survey),
+            status_callback_event=['queued', 'initiated', 'ringing', 'answered', 'completed'],
             status_callback_method='POST',
             url=WEBSITE_URL + "/answer/?survey=" + str(survey) + '&phone=' + str(to_phonenumber) + '&response=' + str(survey_response.id)
         )

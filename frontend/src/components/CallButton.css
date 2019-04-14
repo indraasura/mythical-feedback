@@ -79,7 +79,7 @@
     margin: 0 auto;
     border-radius: 100%;
     border: solid 5px #fff;
-    animation: play 2s ease infinite;
+    animation: ripple 2s ease-out infinite;
     -webkit-backface-visibility: hidden;
     -moz-backface-visibility: hidden;
     -ms-backface-visibility: hidden;
@@ -90,16 +90,31 @@
 @keyframes play {
 
     0% {
-        transform: scale(1);
+        transform: scale(2);
     }
     15% {
-        box-shadow: 0 0 0 5px rgba(0, 230, 118, 0.4)
+        box-shadow: 0 0 0 50px rgba(0, 230, 118, 0.4)
     }
     25% {
-        box-shadow: 0 0 0 10px rgba(0, 230, 118, 0.4), 0 0 0 20px rgba(0, 230, 118, 0.2);
+        box-shadow: 0 0 0 100px rgba(0, 230, 118, 0.4), 0 0 0 200px rgba(0, 230, 118, 0.2);
     }
-    25% {
-        box-shadow: 0 0 0 15px rgba(0, 230, 118, 0.4), 0 0 0 30px rgba(0, 230, 118, 0.2);
+    50% {
+        box-shadow: 0 0 0 200px rgba(0, 230, 118, 0.4), 0 0 0 400px rgba(0, 230, 118, 0.2);
     }
 
+}
+
+@keyframes ripple {
+    0%, 35% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.8;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(4);
+    }
 }

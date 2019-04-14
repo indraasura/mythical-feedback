@@ -50,7 +50,8 @@ class ScriptBuilder extends React.Component {
         callTime: '0 sec',          // Estimated call time
         documentName: '',           // Name of the document which you are working on
         restoreState: false,        // Flag to tell whether we can restore or not
-        saveColor: '#393939'        // Color based on whether it is saved or not
+        saveColor: '#393939',       // Color based on whether it is saved or not
+        resetState: false           // Reset whole document with new start
     };
 
     componentWillMount() {
@@ -103,6 +104,27 @@ class ScriptBuilder extends React.Component {
     componentWillUnmount() {
         // Remove Event Listener once in different component
         document.removeEventListener('keydown', this.keyPressHandler);
+    }
+
+    resetDocument() {
+        const custom_model = new DiagramModel();
+        custom_model.deSerializeDiagram(JSON.parse('{}'), this.engine);
+        this.engine.setDiagramModel(custom_model);
+        this.forceUpdate();
+        this.setState({
+            callButtonValue: '',
+            surveyId: 0,
+            responseId: '',
+            redoStack: [],
+            scriptCheck: false,
+            callTime: '0 sec',
+            documentName: '',
+            saveColor: '#393939',
+            resetState: false,
+
+        });
+
+        this.closeRestoreCard();
     }
 
     closeRestoreCard() {
@@ -441,6 +463,7 @@ class ScriptBuilder extends React.Component {
                 console.log('callPhone =', error);
             });
 
+        // TODO: Work on this issue
         const timer = setInterval(() => {
             fetch(config.API_URL + '/autocall/survey/responses/' + this.state.responseId, {
                 method: 'GET'
@@ -472,11 +495,36 @@ class ScriptBuilder extends React.Component {
             });
     };
 
+    resetHandler = () => {
+        this.setState({
+            resetState: true,
+        })
+    }
+
     render() {
         return (
             <div>
                 <div className={"fixedGenerate"}>
 
+                    {(this.state.resetState) ?
+                        <>
+                            <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 2}}></div>
+                            <div className="show" id={"custom-toast"}>
+                                <span>Are you sure ?</span>
+                                <button className="btn-flat toast-action orange-text"
+                                        style={{marginleft: "5px"}}
+                                        onClick={() => {
+                                            this.resetDocument()
+                                        }}>Yes
+                                </button>
+                                <span style={{cursor: "pointer"}} onClick={() => {
+                                this.setState({
+                                    resetState: false,
+                                })}}><i className="material-icons restore-close-button white-text"
+                                      style={{marginLeft: "0px", position: "absolute"}}>close</i></span>
+                            </div>
+                        </>
+                        : null}
                     {(this.state.restoreState) ?
                         <>
                             <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 2}}></div>
@@ -552,7 +600,8 @@ class ScriptBuilder extends React.Component {
                 </div> : null}
                 <div className="content">
                     <Sidebar documentName={this.state.documentName} changeScript={this.changeScript}
-                             documentHandleInput={this.documentHandleInput}/>
+                             documentHandleInput={this.documentHandleInput}
+                             resetHandler={this.resetHandler} />
                     <div
                         className="diagram-layer"
                         onKeyDown={e => {
