@@ -53,6 +53,8 @@ class ScriptBuilder extends React.Component {
         resetState: false,          // Reset whole document with new start
         trackCurrentCount: 0,       // To track which question we are working during call (Feature)
         trackCurrentNode: '',       // Track previous Node during call so that we can remove styling (Feature)
+        timelineStatus: false,
+        timelineValue: 0
     };
 
     componentWillMount() {
@@ -130,6 +132,8 @@ class ScriptBuilder extends React.Component {
             resetState: false,
             trackCurrentCount: 0,
             trackCurrentNode: '',
+            timelineStatus: false,
+            timelineValue: 0
 
         });
 
@@ -242,7 +246,8 @@ class ScriptBuilder extends React.Component {
                         }
                         setTimeout(() => {
                             this.setState({
-                                saveColor: tempColor
+                                saveColor: tempColor,
+                                isLoading: false,
                             });
                         }, 1000);
                     },
@@ -263,7 +268,7 @@ class ScriptBuilder extends React.Component {
                 })
             }).then(response => response.json())
                 .then(response => {
-                    let tempColor = '#4caf50';
+                        let tempColor = '#4caf50';
                         console.log(response);
                         if (!response.script_status) {
                             tempColor = "#f44336";
@@ -273,11 +278,11 @@ class ScriptBuilder extends React.Component {
                                 surveyId: response.id,
                             })
                         }
-                    setTimeout(() => {
-                        this.setState({
-                            saveColor: tempColor
-                        });
-                    }, 1000);
+                        setTimeout(() => {
+                            this.setState({
+                                saveColor: tempColor
+                            });
+                        }, 1000);
                     },
                     (error) => {
                         M.toast({html: "Unexpected Error"});
@@ -460,6 +465,8 @@ class ScriptBuilder extends React.Component {
                 this.setState({
                     trackCurrentCount: 0,
                     trackCurrentNode: '',
+                    timelineStatus: true,
+                    timelineValue: 0,
                 });
 
                 // TODO: Yes, I can do with sockets but I tried to avoid it so please
@@ -470,6 +477,24 @@ class ScriptBuilder extends React.Component {
                     }).then(response => response.json())
                         .then(response => {
                             console.log(response.call_status);
+                            let temp_value = 0;
+                            if (response.call_status === 'queued') {
+                                temp_value = 1;
+                            } else if (response.call_status === 'initiated') {
+                                temp_value = 2;
+                            } else if (response.call_status === 'ringing') {
+                                temp_value = 3;
+                            } else if (response.call_status === 'in-progress') {
+                                temp_value = 4;
+                            } else if (response.call_status === 'completed') {
+                                temp_value = 5;
+                            }
+
+                            if (temp_value !== this.state.timelineValue) {
+                                this.setState({
+                                    timelineValue: temp_value
+                                });
+                            }
                             const responses_length = response.responses.length;
                             if (responses_length > 0 && responses_length !== this.state.trackCurrentCount) {
                                 if (responses_length > 1) {
@@ -499,7 +524,28 @@ class ScriptBuilder extends React.Component {
                                 this.setState({
                                     trackCurrentCount: 0,
                                     trackCurrentNode: '',
+                                    timelineValue: 0,
                                 });
+                                setTimeout(() => {
+                                    this.setState({
+                                        timelineStatus: false
+                                    })
+                                }, 3000);
+                                clearInterval(timer);
+                            }
+                            if (response.call_status === 'failed') {
+                                document.getElementById("search").style.background = "#f44336";
+                                document.getElementById("search").classList.remove("call-animation");
+                                this.setState({
+                                    trackCurrentCount: 0,
+                                    trackCurrentNode: '',
+                                    timelineValue: 0,
+                                });
+                                setTimeout(() => {
+                                    this.setState({
+                                        timelineStatus: false
+                                    })
+                                }, 3000);
                                 clearInterval(timer);
                             }
                         });
@@ -537,6 +583,42 @@ class ScriptBuilder extends React.Component {
             <div>
                 <div className={"fixedGenerate"}>
 
+                    {(this.state.timelineStatus) ?
+                    <div className="show" id={"timeline-toast"}>
+                        <div id="lineCont">
+                            <div id="line">
+                                <div className={"circle-timeline " + (this.state.timelineValue > 0 ? 'done ' : '') + (this.state.timelineValue === 1 ? 'timeline-progress-animation' : '')}  id={"circle-0"} style={{left: '0%'}}>
+                                    <div className="popupSpan white-text">
+                                        queued
+                                    </div>
+                                </div>
+                                <div className={"circle-timeline " + (this.state.timelineValue > 1 ? 'done ' : '') + (this.state.timelineValue === 2 ? 'timeline-progress-animation' : '')} id={"circle-1"} style={{left: '25%'}}>
+                                    <div className="popupSpan white-text">
+                                        initiated
+                                    </div>
+                                </div>
+                                <div className={"circle-timeline " + (this.state.timelineValue > 2 ? 'done ' : '') + (this.state.timelineValue === 3 ? 'timeline-progress-animation' : '')} id={"circle-2"} style={{left: '50%'}}>
+                                    <div className="popupSpan white-text">
+                                        ringing
+                                    </div>
+                                </div>
+                                <div className={"circle-timeline " + (this.state.timelineValue > 3 ? 'done ' : '') + (this.state.timelineValue === 4 ? 'timeline-progress-animation' : '')} id={"circle-3"} style={{left: '75%'}}>
+                                    <div className="popupSpan white-text">
+                                        answered
+                                    </div>
+                                </div>
+                                <div className={"circle-timeline " + (this.state.timelineValue > 4 ? 'done ' : '') + (this.state.timelineValue === 5 ? 'timeline-progress-animation' : '')} id={"circle-4"} style={{left: '99%'}}>
+                                    <div className="popupSpan white-text">
+                                        completed
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    : null}
+
                     {(this.state.resetState) ?
                         <>
                             <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 2}}></div>
@@ -549,9 +631,10 @@ class ScriptBuilder extends React.Component {
                                         }}>Yes
                                 </button>
                                 <span style={{cursor: "pointer"}} onClick={() => {
-                                this.setState({
-                                    resetState: false,
-                                })}}><i className="material-icons restore-close-button white-text"
+                                    this.setState({
+                                        resetState: false,
+                                    })
+                                }}><i className="material-icons restore-close-button white-text"
                                       style={{marginLeft: "0px", position: "absolute"}}>close</i></span>
                             </div>
                         </>
@@ -617,7 +700,7 @@ class ScriptBuilder extends React.Component {
                            this.generateJson()
                        }}
                        style={{backgroundColor: this.state.saveColor}}>
-                        {this.state.isLoading ? <div className="progress button-progress">
+                        {this.state.isLoading ? <div className="progress button-progress" style={{width: "92%"}}>
                             <div className="indeterminate"></div>
                         </div> : null}
                         <i className="material-icons right">cloud</i>Generate
@@ -632,7 +715,7 @@ class ScriptBuilder extends React.Component {
                 <div className="content">
                     <Sidebar documentName={this.state.documentName} changeScript={this.changeScript}
                              documentHandleInput={this.documentHandleInput}
-                             resetHandler={this.resetHandler} />
+                             resetHandler={this.resetHandler}/>
                     <div
                         className="diagram-layer"
                         onKeyDown={e => {

@@ -55,7 +55,7 @@ header, main, footer {
 .button-progress {
     position: absolute !important;
     margin: 0 !important;
-    left: 0 !important;
+    left: 7px !important;
 }
 .call-button {
     position: fixed;
@@ -200,4 +200,159 @@ span .value {
         box-shadow: 0 0 0 15px rgba(0, 230, 118, 0.4), 0 0 0 30px rgba(0, 230, 118, 0.2);
     }
 
+}
+
+.timeline-progress-animation {
+    background: #fff;
+    position: relative;
+    margin: 0 auto;
+    animation: timeline-play 2s ease infinite;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+
+}
+
+@keyframes timeline-play {
+
+    0% {
+        transform: scale(1);
+    }
+    15% {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4)
+    }
+    25% {
+        box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.4), 0 0 0 7px rgba(255, 255, 255, 0.2);
+    }
+    25% {
+        box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.4), 0 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+}
+
+/* Timeline basic structure */
+#lineCont {
+    width: 100%;
+}
+
+#line {
+    height: 6px;
+    width: 90%;
+    background: white;
+    border-radius: 5px;
+    margin: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    position: relative;
+}
+
+#span {
+    display: none;
+    width: 70%;
+    margin: auto;
+    margin-top: 25%;
+    text-align: center;
+    color: white;
+}
+
+.circle-timeline {
+    width: 20px;
+    height: 20px;
+    background: #393939;
+    border-radius: 15px;
+    position: absolute;
+    top: -7px;
+    border: 2px solid white;
+    cursor: pointer;
+}
+
+.circle-timeline:before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #393939;
+    position: absolute;
+    border-radius: 100%;
+    top: 3px;
+    left: 3px;
+    display: none;
+}
+
+.done {
+    background-color: white;
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    top: -7px;
+}
+
+.circle-timeline .popupSpan {
+    width: auto;
+    height: auto;
+    padding: 10px;
+    white-space: nowrap;
+    display: inline-block;
+    color: red;
+    position: absolute;
+    top: 10px;
+    left: -27px;
+    font-size: 0.7rem;
+    transition: all 0.1s ease-out;
+}
+.circle-timeline:hover:before, .circle-timeline.active:before {
+    display: block;
+}
+.circle-timeline:hover .popupSpan, .circle-timeline.active .popupSpan {
+    display: block;
+}
+.circle-timeline.active .popupSpan {
+    font-weight: bold;
+}
+
+#timeline-toast {
+    visibility: hidden;
+    min-width: 450px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 30px 30px 30px 10px;
+    position: fixed;
+    z-index: 2;
+    left: 50%;
+    top: 30px;
+}
+
+/* Show the snackbar when clicking on a button (class added with JavaScript) */
+#timeline-toast.show {
+    visibility: visible; /* Show the snackbar */
+    /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+    However, delay the fade out process for 2.5 seconds */
+    -webkit-animation: timeline-fadein 0.5s;
+    animation: timeline-fadein 0.5s;
+    transition: all 0.5s ease-in-out;
+}
+
+@-webkit-keyframes timeline-fadein {
+    from {top: 0; opacity: 0;}
+    to {top: 30px; opacity: 1;}
+}
+
+@keyframes timeline-fadein {
+    from {top: 0; opacity: 0;}
+    to {top: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes timeline-fadeout {
+    from {top: 30px; opacity: 1;}
+    to {top: 0; opacity: 0;}
+}
+
+@keyframes timeline-fadeout {
+    from {top: 30px; opacity: 1;}
+    to {top: 0; opacity: 0;}
 }
