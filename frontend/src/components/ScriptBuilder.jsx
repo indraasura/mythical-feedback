@@ -53,8 +53,9 @@ class ScriptBuilder extends React.Component {
         resetState: false,          // Reset whole document with new start
         trackCurrentCount: 0,       // To track which question we are working during call (Feature)
         trackCurrentNode: '',       // Track previous Node during call so that we can remove styling (Feature)
-        timelineStatus: false,
-        timelineValue: 0
+        timelineStatus: false,      // Determine whether we need to show call status or not as timeline
+        timelineValue: 0,           // Timeline value determines the status, ongoing, answered etc
+        timelineTimer: 0,           // Timer is the time elapsed by call
     };
 
     componentWillMount() {
@@ -133,7 +134,8 @@ class ScriptBuilder extends React.Component {
             trackCurrentCount: 0,
             trackCurrentNode: '',
             timelineStatus: false,
-            timelineValue: 0
+            timelineValue: 0,
+            timelineTimer: 0
 
         });
 
@@ -431,6 +433,10 @@ class ScriptBuilder extends React.Component {
         this.calculateCallTime();
     }
 
+    prettifyTime(val) {
+        return String(Math.floor(val / 60)).padStart(2,0) + ":" + String(val % 60).padStart(2,0)
+    }
+
     // Call Button input value to be saved in state
     callHandleInput = (e) => {
         this.setState({
@@ -467,11 +473,16 @@ class ScriptBuilder extends React.Component {
                     trackCurrentNode: '',
                     timelineStatus: true,
                     timelineValue: 0,
+                    timelineTimer: 0,
                 });
 
                 // TODO: Yes, I can do with sockets but I tried to avoid it so please
                 // Why avoid ? I wanted to have less dependency so that I can deploy it on heroku else they charge :c
                 const timer = setInterval(() => {
+                    let time = this.state.timelineTimer += 1;
+                    this.setState({
+                        timelineTimer: time
+                    });
                     fetch(config.API_URL + '/autocall/survey/responses/' + this.state.responseId, {
                         method: 'GET'
                     }).then(response => response.json())
@@ -525,6 +536,7 @@ class ScriptBuilder extends React.Component {
                                     trackCurrentCount: 0,
                                     trackCurrentNode: '',
                                     timelineValue: 0,
+                                    timelineTimer: 0
                                 });
                                 setTimeout(() => {
                                     this.setState({
@@ -540,6 +552,7 @@ class ScriptBuilder extends React.Component {
                                     trackCurrentCount: 0,
                                     trackCurrentNode: '',
                                     timelineValue: 0,
+                                    timelineTimer: 0
                                 });
                                 setTimeout(() => {
                                     this.setState({
@@ -613,6 +626,9 @@ class ScriptBuilder extends React.Component {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div className={"timeline-counter"}>
+                            {this.prettifyTime(this.state.timelineTimer)}
                         </div>
 
 

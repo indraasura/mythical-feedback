@@ -31,9 +31,8 @@ class UpdateStatusCallAPIView(APIView):
     def post(self, request, *args, **kwargs):
         print('UPDATE')
         print(request.POST)
-        survey_id = request.GET.get('survey')
-        survey_model = Survey.objects.get(id=survey_id)
-        survey_response_model = SurveyResponse.objects.get(survey=survey_model)
+        survey_response = request.GET.get('response')
+        survey_response_model = SurveyResponse.objects.get(id=survey_response)
         survey_response_model.call_status = request.POST['CallStatus']
         survey_response_model.save()
 
@@ -60,7 +59,7 @@ class MakeCallAPIView(APIView):
         call = self.client.calls.create(
             to=to_phonenumber,
             from_=from_phonenumber,
-            status_callback=WEBSITE_URL + '/status/?survey=' + str(survey),
+            status_callback=WEBSITE_URL + '/status/?response=' + str(survey_response.id),
             status_callback_event=['queued', 'initiated', 'ringing', 'answered', 'completed'],
             status_callback_method='POST',
             url=WEBSITE_URL + "/answer/?survey=" + str(survey) + '&phone=' + str(to_phonenumber) + '&response=' + str(survey_response.id)
@@ -89,6 +88,7 @@ class AnswerCallAPIView(APIView):
 
         response.record(timeout=2,
                         action=WEBSITE_URL + '/next/?counter=1&survey=' + str(survey_id) + '&response=' + str(survey_response),
+                        # maxLength
                         recordingStatusCallback=WEBSITE_URL + '/save/?survey=' + str(survey_id) + '&question=' +
                                                 str(survey_script_flow[0]['id']) + '&response=' + str(survey_response),
                         trim="trim-silence")
@@ -153,6 +153,7 @@ class SaveCallAPIView(APIView):
 
         print('file=', media_root + recording_url.split('/')[-1] + '.wav')
         open_file = File(open(media_root + recording_url.split('/')[-1] + '.wav', 'wb+'))
+        # Add Call Sid to have unique response for each questionID
         response_model = Response.objects.get(question_id=question_id)
         response_model.audio_file = open_file
         response_model.transcript = transcript

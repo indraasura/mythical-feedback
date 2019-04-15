@@ -233,7 +233,7 @@ span .value {
 
 /* Timeline basic structure */
 #lineCont {
-    width: 100%;
+    width: 80%;
 }
 
 #line {
@@ -314,7 +314,7 @@ span .value {
 
 #timeline-toast {
     visibility: hidden;
-    min-width: 450px;
+    min-width: 550px;
     margin-left: -125px;
     background-color: #333;
     color: #fff;
@@ -355,4 +355,13 @@ span .value {
 @keyframes timeline-fadeout {
     from {top: 30px; opacity: 1;}
     to {top: 0; opacity: 0;}
+}
+
+.timeline-counter {
+    position: absolute;
+    right: 0;
+    margin-right: 50px;
+    font-size: 20px;
+    bottom: 0;
+    margin-bottom: 20px;
 }
