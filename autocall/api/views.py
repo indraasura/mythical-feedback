@@ -30,6 +30,7 @@ class UpdateStatusCallAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         print('UPDATE')
+        print(request.POST)
         survey_id = request.GET.get('survey')
         survey_model = Survey.objects.get(id=survey_id)
         survey_response_model = SurveyResponse.objects.get(survey=survey_model)
@@ -77,7 +78,11 @@ class AnswerCallAPIView(APIView):
         survey_script_flow = survey_model.script_flow['data']
         survey_response = request.GET.get('response')
 
-
+        # Quickly creating the response field just to let react knows that we are working on this response
+        response_model = Response.objects.create(question_id=str(survey_script_flow[0]['id']))
+        response_model.save()
+        survey_model = SurveyResponse.objects.get(id=survey_response)
+        survey_model.responses.add(response_model.id)
 
         response = VoiceResponse()
         response.say(survey_script_flow[0]['question'])
@@ -105,6 +110,12 @@ class NextCallAPIView(APIView):
 
         response = VoiceResponse()
         if len(survey_script_flow) > survey_counter:
+
+            # Quickly creating the response field just to let react knows that we are working on this response
+            response_model = Response.objects.create(question_id=str(survey_script_flow[survey_counter]['id']))
+            response_model.save()
+            survey_model = SurveyResponse.objects.get(id=survey_response)
+            survey_model.responses.add(response_model.id)
             response.say(survey_script_flow[survey_counter]['question'])
 
             response.record(timeout=2,
@@ -142,7 +153,9 @@ class SaveCallAPIView(APIView):
 
         print('file=', media_root + recording_url.split('/')[-1] + '.wav')
         open_file = File(open(media_root + recording_url.split('/')[-1] + '.wav', 'wb+'))
-        response_model = Response.objects.create(audio_file=open_file, transcript=transcript, question_id=question_id)
+        response_model = Response.objects.get(question_id=question_id)
+        response_model.audio_file = open_file
+        response_model.transcript = transcript
         response_model.save()
 
         survey_model = SurveyResponse.objects.get(id=survey_response)

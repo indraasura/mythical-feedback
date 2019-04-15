@@ -46,12 +46,13 @@ class ScriptBuilder extends React.Component {
         responseId: '',             // Call response id used
         localStorageLoader: false,  // If local storage is used or not
         redoStack: [],              // On Undo, push the changes in redoStack
-        scriptCheck: false,         // Script Validity
         callTime: '0 sec',          // Estimated call time
         documentName: '',           // Name of the document which you are working on
         restoreState: false,        // Flag to tell whether we can restore or not
         saveColor: '#393939',       // Color based on whether it is saved or not
-        resetState: false           // Reset whole document with new start
+        resetState: false,          // Reset whole document with new start
+        trackCurrentCount: 0,       // To track which question we are working during call (Feature)
+        trackCurrentNode: '',       // Track previous Node during call so that we can remove styling (Feature)
     };
 
     componentWillMount() {
@@ -107,20 +108,28 @@ class ScriptBuilder extends React.Component {
     }
 
     resetDocument() {
-        const custom_model = new DiagramModel();
-        custom_model.deSerializeDiagram(JSON.parse('{}'), this.engine);
-        this.engine.setDiagramModel(custom_model);
+        this.engine = new DiagramEngine();
+        this.engine.registerNodeFactory(new DefaultNodeFactory());
+        this.engine.registerLinkFactory(new DefaultLinkFactory());
+        this.engine.installDefaultFactories();
+
+        // Custom Diamond node for optional conditions
+        this.engine.registerPortFactory(new SimplePortFactory("diamond", () => {
+            return new DiamondPortModel();
+        }));
+        this.engine.registerNodeFactory(new DiamondNodeFactory());
         this.forceUpdate();
         this.setState({
             callButtonValue: '',
             surveyId: 0,
             responseId: '',
             redoStack: [],
-            scriptCheck: false,
             callTime: '0 sec',
             documentName: '',
             saveColor: '#393939',
             resetState: false,
+            trackCurrentCount: 0,
+            trackCurrentNode: '',
 
         });
 
@@ -221,18 +230,21 @@ class ScriptBuilder extends React.Component {
             }).then(response => response.json())
                 .then(response => {
                         console.log(response);
+                        let tempColor = '#4caf50';
                         if (!response.script_status) {
-                            this.setState({
-                                scriptCheck: false
-                            });
+                            tempColor = "#f44336";
                             M.toast({html: response.script_message});
                         } else {
                             this.setState({
                                 surveyId: response.id,
-                                scriptCheck: true
                             });
                             localStorage.setItem('document_id', response.id);
                         }
+                        setTimeout(() => {
+                            this.setState({
+                                saveColor: tempColor
+                            });
+                        }, 1000);
                     },
                     (error) => {
                         M.toast({html: "Unexpected Error"});
@@ -251,40 +263,26 @@ class ScriptBuilder extends React.Component {
                 })
             }).then(response => response.json())
                 .then(response => {
+                    let tempColor = '#4caf50';
                         console.log(response);
                         if (!response.script_status) {
-                            this.setState({
-                                scriptCheck: false
-                            });
+                            tempColor = "#f44336";
                             M.toast({html: response.script_message});
                         } else {
                             this.setState({
                                 surveyId: response.id,
-                                scriptCheck: true
                             })
                         }
+                    setTimeout(() => {
+                        this.setState({
+                            saveColor: tempColor
+                        });
+                    }, 1000);
                     },
                     (error) => {
                         M.toast({html: "Unexpected Error"});
                     });
         }
-
-        setTimeout(() => {
-            this.setState({
-                isLoading: false
-            });
-            if (this.state.scriptCheck) {
-                this.setState({
-                    saveColor: "#4caf50"
-                });
-                // TODO: Make sharable plugin in sidenav
-                // M.toast({html: ShareToast});
-            } else {
-                this.setState({
-                    saveColor: "#f44336"
-                });
-            }
-        }, 1000);
     }
 
     // TODO: Customize input css with multiple input, save it in nodes.extras
@@ -458,25 +456,58 @@ class ScriptBuilder extends React.Component {
                 console.log(response);
                 this.setState({
                     responseId: response.id
-                })
+                });
+                this.setState({
+                    trackCurrentCount: 0,
+                    trackCurrentNode: '',
+                });
+
+                // TODO: Yes, I can do with sockets but I tried to avoid it so please
+                // Why avoid ? I wanted to have less dependency so that I can deploy it on heroku else they charge :c
+                const timer = setInterval(() => {
+                    fetch(config.API_URL + '/autocall/survey/responses/' + this.state.responseId, {
+                        method: 'GET'
+                    }).then(response => response.json())
+                        .then(response => {
+                            console.log(response.call_status);
+                            const responses_length = response.responses.length;
+                            if (responses_length > 0 && responses_length !== this.state.trackCurrentCount) {
+                                if (responses_length > 1) {
+                                    // const node_previous_id = response.responses[responses_length - 2];
+                                    const node_previous_node = document.querySelector('[data-nodeid="' + this.state.trackCurrentNode + '"]');
+                                    const node_previous_first = node_previous_node.firstChild;
+                                    node_previous_first.classList.remove("call-progress-animation");
+                                }
+                                const node_id = response.responses[responses_length - 1];
+                                console.log('Change Detected', response.responses.length, node_id.question_id);
+                                const node_node = document.querySelector('[data-nodeid="' + node_id.question_id + '"]');
+                                const node_first = node_node.firstChild;
+                                node_first.classList.add("call-progress-animation");
+                                this.setState({
+                                    trackCurrentCount: responses_length,
+                                    trackCurrentNode: node_id.question_id
+                                });
+                            }
+                            if (response.call_status === 'completed') {
+                                document.getElementById("search").style.background = "#f44336";
+                                document.getElementById("search").classList.remove("call-animation");
+
+                                // const node_previous_id = response.responses[responses_length - 1];
+                                const node_previous_node = document.querySelector('[data-nodeid="' + this.state.trackCurrentNode + '"]');
+                                const node_previous_first = node_previous_node.firstChild;
+                                node_previous_first.classList.remove("call-progress-animation");
+                                this.setState({
+                                    trackCurrentCount: 0,
+                                    trackCurrentNode: '',
+                                });
+                                clearInterval(timer);
+                            }
+                        });
+                }, 1000);
+
             }, (error) => {
                 console.log('callPhone =', error);
             });
-
-        // TODO: Work on this issue
-        const timer = setInterval(() => {
-            fetch(config.API_URL + '/autocall/survey/responses/' + this.state.responseId, {
-                method: 'GET'
-            }).then(response => response.json())
-                .then(response => {
-                    console.log(response.call_status);
-                    if (response.call_status === 'DONE') {
-                        document.getElementById("search").style.background = "#f44336";
-                        document.getElementById("search").classList.remove("call-animation");
-                        clearInterval(timer);
-                    }
-                });
-        }, 2000);
     };
 
     changeScript = (id) => {
