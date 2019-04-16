@@ -26,7 +26,7 @@ header, main, footer {
     top: 0;
     right: 0;
     padding: 7px;
-    z-index: 999;
+    z-index: 2;
 }
 
 .fixedLoader {
@@ -364,4 +364,19 @@ span .value {
     font-size: 20px;
     bottom: 0;
     margin-bottom: 20px;
+}
+
+.helper-slider {
+    position: fixed !important;
+    z-index: 5 !important;
+    width: 92% !important;
+    height: 85% !important;
+    margin-top: 50px !important;
+    margin-left: 50px !important;
+    margin-right: 50px !important;
+}
+
+.slider-gif-image {
+    margin-top: 50px;
+    margin-left: 40px;
 }

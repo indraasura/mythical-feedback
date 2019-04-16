@@ -26,6 +26,11 @@ import noUiSlider from 'nouislider';
 import 'nouislider/distribute/nouislider.css';
 import wNumb from 'wnumb/wNumb';
 
+// Images
+import nodes_gif from '../resources/nodes.gif';
+import links_gif from '../resources/links.gif';
+import rename_gif from '../resources/rename.gif';
+
 const ShareToast = '<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
     'https://127.0.0.1:8000/static/css/call.css\n' +
     'https://127.0.0.1:8000/static/js/call.js\n' +
@@ -56,6 +61,7 @@ class ScriptBuilder extends React.Component {
         timelineStatus: false,      // Determine whether we need to show call status or not as timeline
         timelineValue: 0,           // Timeline value determines the status, ongoing, answered etc
         timelineTimer: 0,           // Timer is the time elapsed by call
+        helperSlider: false
     };
 
     componentWillMount() {
@@ -103,6 +109,9 @@ class ScriptBuilder extends React.Component {
         // Before this the slider was not showing any numerical tooltip
         const array_of_dom_elements = document.querySelectorAll("input[type=range]");
         M.Range.init(array_of_dom_elements);
+
+        const elems = document.querySelectorAll('.carousel');
+        const instances = M.Carousel.init(elems, {indicators: true});
     }
 
     componentWillUnmount() {
@@ -591,9 +600,72 @@ class ScriptBuilder extends React.Component {
         })
     }
 
+    moveSlider() {
+        console.log('YES');
+        const instance = M.Carousel.getInstance(document.getElementById("helper-slider"));
+        console.log(instance);
+        instance.next();
+    }
+
     render() {
         return (
             <div>
+
+                {(this.state.helperSlider) ?
+                <div className="carousel carousel-slider helper-slider" id={"helper-slider"}>
+                    <div className="center" style={{position: "absolute", bottom: 0, zIndex: 2}}>
+                        <p className={"white-text"}>(Click Anywhere to continue or swipe)</p>
+                    </div>
+                    <div className="carousel-item red white-text" href="#one!">
+                        <div className={"row"}>
+                            <div className={"col s6"}>
+                        <img className={"slider-gif-image"} src={nodes_gif} />
+                            </div>
+                            <div className={"col s6 left"}>
+                                <h1>Step 1</h1>
+                                <h3>Drag & Drop</h3>
+                                <p>You must use only 1 source node and 1 end node, in short these 2 nodes are required</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="carousel-item teal white-text" href="#two!">
+                        <div className={"row"}>
+                            <div className={"col s6"}>
+                                <img className={"slider-gif-image"} src={links_gif} />
+                            </div>
+                            <div className={"col s6 left"}>
+                                <h1>Step 2</h1>
+                                <h3>Connect</h3>
+                                <p>Connecting every node is important, you can't leave any node isolated</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="carousel-item green white-text" href="#three!">
+                        <div className={"row"}>
+                            <div className={"col s6"}>
+                                <img className={"slider-gif-image"} src={rename_gif} />
+                            </div>
+                            <div className={"col s6 left"}>
+                                <h1>Step 3</h1>
+                                <h3>Configure</h3>
+                                <p>Double click on any node, configure as your requirements</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="carousel-item blue white-text" href="#four!">
+                        <div className={"row"}>
+                            <div className={"col s6"}>
+                                <img className={"slider-gif-image"} src={links_gif} />
+                            </div>
+                            <div className={"col s6 left"}>
+                                <h1>Step 4</h1>
+                                <h3>Generate</h3>
+                                <p>Now Generate and you are good to go</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    : null}
                 <div className={"fixedGenerate"}>
 
                     {(this.state.timelineStatus) ?
