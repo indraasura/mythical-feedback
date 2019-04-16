@@ -31,35 +31,41 @@ class ScriptJSONAPIView(generics.RetrieveUpdateDestroyAPIView):
             filtered_data = {}
             final_list = []
             data = script_builder_model['script_flow']
-            # try:
-            for i in data['nodes']:
-                filtered_data[i['id']] = i['name']
+            try:
+                for i in data['nodes']:
+                    filtered_data[i['id']] = {
+                        'question': i['name'],
+                        'record_time': i['extras']['record_time'],
+                        'voice_gender': i['extras']['voice_gender']
+                    }
 
-                # Check if we have Source node which have only 1 port with Out
-                if len(i['ports']) == 1 and i['ports'][0]['label'] == 'Out':
-                    main_id = i['id']
-            for i in data['links']:
-                temp_json[i['source']] = i['target']
-            for i in range(len(temp_json) + 1):
-                final_list.append({
-                    'id': main_id,
-                    'question': filtered_data[main_id]
-                })
-                main_id = temp_json[main_id] if main_id in temp_json else None
-            final_data = {
-                'name': script_builder_model['name'],
-                'id': kwargs['pk'],
-                'data': final_list
-            }
-            self.perform_update(serializer)
-            print('UPDATED')
-            script = ScriptBuilder.objects.get(id=kwargs['pk'])
-            print(script.id, script.script_flow)
-            survey_model = Survey.objects.filter(script=script).update(script_flow=final_data)
-            # except:
-            #     script = ScriptBuilder.objects.get(id=script_builder_model['id'])
-            #     script.delete()
-            #     return Response({'status': 500, 'message': "JSON is not valid"})
+                    # Check if we have Source node which have only 1 port with Out
+                    if len(i['ports']) == 1 and i['ports'][0]['label'] == 'Out':
+                        main_id = i['id']
+                for i in data['links']:
+                    temp_json[i['source']] = i['target']
+                for i in range(len(temp_json) + 1):
+                    final_list.append({
+                        'id': main_id,
+                        'question': filtered_data[main_id]['question'],
+                        'record_time': filtered_data[main_id]['record_time'],
+                        'voice_gender': filtered_data[main_id]['voice_gender']
+                    })
+                    main_id = temp_json[main_id] if main_id in temp_json else None
+                final_data = {
+                    'name': script_builder_model['name'],
+                    'id': kwargs['pk'],
+                    'data': final_list
+                }
+                self.perform_update(serializer)
+                print('UPDATED')
+                script = ScriptBuilder.objects.get(id=kwargs['pk'])
+                print(script.id, script.script_flow)
+                survey_model = Survey.objects.filter(script=script).update(script_flow=final_data)
+            except:
+                 script = ScriptBuilder.objects.get(id=script_builder_model['id'])
+                 script.delete()
+                 return Response({'status': 500, 'message': "JSON is not valid"})
             return Response({
                 'id': kwargs['pk'],
                 'script_status': True
@@ -171,7 +177,11 @@ class ScriptFlowUploadView(APIView):
                 data = script_builder_model['script_flow']
                 try:
                     for i in data['nodes']:
-                        filtered_data[i['id']] = i['name']
+                        filtered_data[i['id']] = {
+                            'question': i['name'],
+                            'record_time': i['extras']['record_time'],
+                            'voice_gender': i['extras']['voice_gender']
+                        }
 
                         # Check if we have Source node which have only 1 port with Out
                         if len(i['ports']) == 1 and i['ports'][0]['label'] == 'Out':
@@ -181,7 +191,9 @@ class ScriptFlowUploadView(APIView):
                     for i in range(len(temp_json) + 1):
                         final_list.append({
                             'id': main_id,
-                            'question': filtered_data[main_id]
+                            'question': filtered_data[main_id]['question'],
+                            'record_time': filtered_data[main_id]['record_time'],
+                            'voice_gender': filtered_data[main_id]['voice_gender']
                         })
                         main_id = temp_json[main_id] if main_id in temp_json else None
                     final_data = {

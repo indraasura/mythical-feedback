@@ -224,6 +224,24 @@ class Sidebar extends Component {
                                 return (
                                     <li>
                                         <div className="subheader" style={{paddingLeft: "20px"}}>Settings</div>
+                                        <div style={{margin: "20px"}}>
+                                            <input placeholder="Account Sid" id="account-sid" type="text"
+                                                   value={this.props.accountSid}
+                                                   onChange={ this.props.accountSidHandleInput.bind(this) } />
+                                            <input placeholder="Auth Token" id="auth-token" type="text"
+                                                   value={this.props.authToken}
+                                                   onChange={ this.props.authTokenHandleInput.bind(this) } />
+                                            <input placeholder="ex. +12019044307" id="from-phone-number" type="text"
+                                                   value={this.props.fromPhoneNumber}
+                                                   onChange={ this.props.fromPhoneNumberHandleInput.bind(this) } />
+                                            <button className={"btn btn-large red"}
+                                                    onClick={() => {
+                                                        this.props.clearCredentials()
+                                                    }}>Clear</button>
+                                            <p style={{lineHeight: '20px'}}>Note: We save credentails in localstorage so that on refesh you need not to paste
+                                            it again, so if you leave this site then please clear your local storage by pressing
+                                            this button</p>
+                                        </div>
                                     </li>
                                 );
                             default:

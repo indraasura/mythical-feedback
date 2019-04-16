@@ -61,7 +61,12 @@ class ScriptBuilder extends React.Component {
         timelineStatus: false,      // Determine whether we need to show call status or not as timeline
         timelineValue: 0,           // Timeline value determines the status, ongoing, answered etc
         timelineTimer: 0,           // Timer is the time elapsed by call
-        helperSlider: false
+        helperSlider: false,
+        accountSid: '',
+        authToken: '',
+        fromPhoneNumber: '',
+        sliderTimer: 40,
+        tempColor: '#525252',
     };
 
     componentWillMount() {
@@ -87,12 +92,29 @@ class ScriptBuilder extends React.Component {
                 restoreState: true
             })
         }
+
+        const account_sid = localStorage.getItem("account_sid");
+        const auth_token = localStorage.getItem("auth_token");
+        const from_phone_number = localStorage.getItem("from_phone_number");
+
+        this.setState({
+            accountSid: account_sid || '',
+            authToken: auth_token || '',
+            fromPhoneNumber: from_phone_number || '',
+        })
+
+        const helper_slider = localStorage.getItem("helper_slider");
+        if (!helper_slider){
+            this.setState({
+                helperSlider: true,
+            });
+        }
     }
 
     componentDidMount() {
         const slider = document.getElementById('record-time');
         noUiSlider.create(slider, {
-            start: 2,
+            start: 4,
             connect: true,
             step: 5,
             orientation: 'horizontal', // 'horizontal' or 'vertical'
@@ -111,7 +133,36 @@ class ScriptBuilder extends React.Component {
         M.Range.init(array_of_dom_elements);
 
         const elems = document.querySelectorAll('.carousel');
-        const instances = M.Carousel.init(elems, {indicators: true});
+        const instances = M.Carousel.init(elems, {indicators: true, fullWidth: true,
+            noWrap: true,
+            enableTouch: false,});
+        const instance = M.Carousel.getInstance(document.getElementById("helper-slider"));
+        if (this.state.helperSlider) {
+            const timer = setInterval(() => {
+                let slider_timer = this.state.sliderTimer;
+                if (slider_timer === 38) {
+                    this.setState({
+                        tempColor: 'white',
+                    });
+                    instance.next()
+                } else if (slider_timer === 31) {
+                    instance.next()
+                } else if (slider_timer === 22) {
+                    instance.next()
+                } else if (slider_timer === 15) {
+                    instance.next()
+                } else if (slider_timer === 9) {
+                    instance.next()
+                }
+                if (slider_timer <= 0) {
+                    clearInterval(timer);
+                } else {
+                    this.setState({
+                        sliderTimer: slider_timer - 1
+                    })
+                }
+            }, 1000)
+        }
     }
 
     componentWillUnmount() {
@@ -169,6 +220,7 @@ class ScriptBuilder extends React.Component {
             const str = JSON.stringify(localScriptFlow[localScriptFlow.length - 1]);
             const custom_model = new DiagramModel();
             custom_model.deSerializeDiagram(JSON.parse(str), this.engine);
+            console.log(JSON.parse(str));
             this.engine.setDiagramModel(custom_model);
             this.calculateCallTime();
             this.forceUpdate();
@@ -192,6 +244,8 @@ class ScriptBuilder extends React.Component {
     }
 
     // TODO: Breaks in cased of conditional case
+    // TODO: Multiple condition taken into consideration
+    // Calculates the overall time required by the call which is initiated with this flow
     calculateCallTime() {
         let total_word = 0;
         let total_response = 0;
@@ -207,7 +261,7 @@ class ScriptBuilder extends React.Component {
         }
         console.log('totoal_word', total_word);
         console.log('total_response', total_response);
-        let call_time = Math.round(total_word / 1.5) + total_response;
+        let call_time = Math.round(total_word / 1.2) + total_response;
         if (call_time > 60) {
             final_time = Math.floor(call_time / 60) + ' min ' + (call_time % 60) + ' sec';
         } else {
@@ -219,6 +273,7 @@ class ScriptBuilder extends React.Component {
     }
 
     // TODO: How stupid this function is, stop it, get some help!
+    // Make POST request to the server to save JSON, parse JSON and then get survey id from it
     generateJson() {
         if (this.state.documentName === '') {
             M.toast({html: 'Document name not specified'}, 1000);
@@ -263,6 +318,10 @@ class ScriptBuilder extends React.Component {
                         }, 1000);
                     },
                     (error) => {
+                        this.setState({
+                            saveColor: "#f44336",
+                            isLoading: false,
+                        });
                         M.toast({html: "Unexpected Error"});
                     });
         } else {
@@ -296,12 +355,16 @@ class ScriptBuilder extends React.Component {
                         }, 1000);
                     },
                     (error) => {
+                        this.setState({
+                            saveColor: "#f44336",
+                            isLoading: false,
+                        });
                         M.toast({html: "Unexpected Error"});
                     });
         }
     }
 
-    // TODO: Customize input css with multiple input, save it in nodes.extras
+    // Handle input for any node and save them
     handleInput() {
         const iid = this.state.iid;
         let engineState = this.state.engine.getDiagramModel().serializeDiagram();
@@ -311,27 +374,28 @@ class ScriptBuilder extends React.Component {
             setTimeout(() => {
                 engineState = this.engine.getDiagramModel().serializeDiagram();
                 this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
-                this.engine.getDiagramModel().nodes[iid]['extras']['record_time'] = document.getElementById('record-time').value;
-                this.engine.getDiagramModel().nodes[iid]['extras']['voice_gender'] = document.querySelector('input[name="voice"]:checked').value;
+                this.engine.getDiagramModel().nodes[iid].extras['record_time'] = document.getElementById('record-time').value;
+                this.engine.getDiagramModel().nodes[iid].extras['voice_gender'] = document.querySelector('input[name="voice"]:checked').value;
                 document.getElementById('question_text').value = '';
-                document.getElementById('record-time').value = 2;
-                document.getElementById('male_voice').checked = false;
-                document.getElementById('female_voice').checked = false;
+                document.getElementById('record-time').value = 4;
+                document.getElementById('man_voice').checked = false;
+                document.getElementById('woman_voice').checked = false;
 
                 this.engine.repaintCanvas();
-                console.log(this.engine.getDiagramModel().serializeDiagram());
+                console.log('Repainted', this.engine.getDiagramModel().serializeDiagram());
                 this.saveScriptFlow();
             }, 200)
         } else {
             this.engine.getDiagramModel().nodes[iid].name = document.getElementById('question_text').value;
-            this.engine.getDiagramModel().nodes[iid]['extras']['record_time'] = document.getElementById('record-time').value;
-            this.engine.getDiagramModel().nodes[iid]['extras']['voice_gender'] = document.querySelector('input[name="voice"]:checked').value;
+            this.engine.getDiagramModel().nodes[iid].extras['record_time'] = document.getElementById('record-time').value;
+            this.engine.getDiagramModel().nodes[iid].extras['voice_gender'] = document.querySelector('input[name="voice"]:checked').value;
             document.getElementById('question_text').value = '';
-            document.getElementById('record-time').value = 2;
-            document.getElementById('male_voice').checked = false;
-            document.getElementById('female_voice').checked = false;
+            document.getElementById('record-time').value = 4;
+            document.getElementById('man_voice').checked = false;
+            document.getElementById('woman_voice').checked = false;
 
             this.engine.repaintCanvas();
+            console.log('Repainted', this.engine.getDiagramModel().serializeDiagram());
             this.saveScriptFlow();
         }
 
@@ -343,6 +407,7 @@ class ScriptBuilder extends React.Component {
         instance.close();
     }
 
+    // Distribute model in much organized manner
     getDistributedModel(engine, model) {
         const serialized = model.serializeDiagram();
         const distributedSerializedDiagram = distributeElements(serialized);
@@ -359,6 +424,7 @@ class ScriptBuilder extends React.Component {
         this.forceUpdate();
     }
 
+    // Links were not getting attached to the nodes so it is used
     refreshModel() {
         const str = JSON.stringify(this.engine.getDiagramModel().serializeDiagram());
 
@@ -367,6 +433,7 @@ class ScriptBuilder extends React.Component {
         this.engine.setDiagramModel(custom_model);
     }
 
+    // On undo do these stuff (ctrl + z)
     undoHandler() {
         const currentStack = this.state.redoStack;
         const localScriptFlow = JSON.parse(localStorage.getItem("script_flow"));
@@ -442,6 +509,7 @@ class ScriptBuilder extends React.Component {
         this.calculateCallTime();
     }
 
+    // To show time elapsed when we call and then prettify it
     prettifyTime(val) {
         return String(Math.floor(val / 60)).padStart(2,0) + ":" + String(val % 60).padStart(2,0)
     }
@@ -453,6 +521,7 @@ class ScriptBuilder extends React.Component {
         })
     };
 
+    // Document card input to be saved in state
     documentHandleInput = (e) => {
         this.setState({
             documentName: e.target.value
@@ -460,6 +529,44 @@ class ScriptBuilder extends React.Component {
         localStorage.setItem('document_name', e.target.value);
     };
 
+    // Account Sid input to be saved in state
+    accountSidHandleInput = (e) => {
+        this.setState({
+            accountSid: e.target.value
+        });
+        localStorage.setItem('account_sid', e.target.value)
+    };
+
+    // Authentication Token need to be saved in state
+    authTokenHandleInput = (e) => {
+        this.setState({
+            authToken: e.target.value
+        });
+        localStorage.setItem('auth_token', e.target.value)
+    };
+
+    // From phone number from settings to be saved in state
+    fromPhoneNumberHandleInput = (e) => {
+        this.setState({
+            fromPhoneNumber: e.target.value
+        });
+        localStorage.setItem('from_phone_number', e.target.value);
+    };
+
+    // Clear button handler used in sidebarjs to clear all the credentails
+    clearCredentials = () => {
+        this.setState({
+            accountSid: '',
+            authToken: '',
+            fromPhoneNumber: '',
+        });
+        localStorage.removeItem('account_sid');
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('from_phone_number');
+        M.toast({html: 'Cleared, No trace left'})
+    };
+
+    // Call button handler on enter gets executed in calljs
     callPhone = () => {
         fetch(config.API_URL + '/autocall/call/', {
             method: 'POST',
@@ -469,6 +576,9 @@ class ScriptBuilder extends React.Component {
             },
             body: JSON.stringify({
                 to_phonenumber: this.state.callButtonValue,
+                from_phonenumber: this.state.fromPhoneNumber,
+                account_sid: this.state.accountSid,
+                auth_token: this.state.authToken,
                 survey: this.state.surveyId,
             })
         }).then(response => response.json())
@@ -485,7 +595,7 @@ class ScriptBuilder extends React.Component {
                     timelineTimer: 0,
                 });
 
-                // TODO: Yes, I can do with sockets but I tried to avoid it so please
+                // Yes, I can do with sockets but I tried to avoid it so please
                 // Why avoid ? I wanted to have less dependency so that I can deploy it on heroku else they charge :c
                 const timer = setInterval(() => {
                     let time = this.state.timelineTimer += 1;
@@ -574,7 +684,9 @@ class ScriptBuilder extends React.Component {
                 }, 1000);
 
             }, (error) => {
-                console.log('callPhone =', error);
+                document.getElementById("search").style.background = "#f44336";
+                document.getElementById("search").classList.remove("call-animation");
+                M.toast({html: 'Most likely Wrong Credentials'});
             });
     };
 
@@ -598,7 +710,7 @@ class ScriptBuilder extends React.Component {
         this.setState({
             resetState: true,
         })
-    }
+    };
 
     moveSlider() {
         console.log('YES');
@@ -607,16 +719,37 @@ class ScriptBuilder extends React.Component {
         instance.next();
     }
 
+    closeSliderHelper() {
+        this.setState({
+            helperSlider: false
+        })
+    }
+
     render() {
         return (
             <div>
+                <div className={"call-button"}>
+                    <CallButton handleInput={this.callHandleInput} callPhone={this.callPhone}/>
+                </div>
 
                 {(this.state.helperSlider) ?
+                    <>
+                        <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 6, backgroundColor: "rgba(0,0,0,0)"}}></div>
+                    <a onClick={ () => {this.closeSliderHelper()}}><i className="material-icons restore-close-button"
+                                                                      style={{marginLeft: "0px", right: 0, zIndex: 7, fontSize: "36px",
+                                                                          position: "absolute", cursor: "pointer", color: this.state.tempColor}}>close</i></a>
                 <div className="carousel carousel-slider helper-slider" id={"helper-slider"}>
                     <div className="center" style={{position: "absolute", bottom: 0, zIndex: 2}}>
-                        <p className={"white-text"}>(Click Anywhere to continue or swipe)</p>
+                        <h1 style={{color: this.state.tempColor}}>{this.prettifyTime(this.state.sliderTimer)}</h1>
                     </div>
-                    <div className="carousel-item red white-text" href="#one!">
+                    <div className="carousel-item white black-text">
+                        <div className={"row"}>
+                            <div className={"col s12"}>
+                                <img style={{position: "absolute", left: "33%", top: "10%"}} src={"https://imgur.com/wOOWWqm.png"} />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="carousel-item red white-text">
                         <div className={"row"}>
                             <div className={"col s6"}>
                         <img className={"slider-gif-image"} src={nodes_gif} />
@@ -628,7 +761,7 @@ class ScriptBuilder extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className="carousel-item teal white-text" href="#two!">
+                    <div className="carousel-item teal white-text">
                         <div className={"row"}>
                             <div className={"col s6"}>
                                 <img className={"slider-gif-image"} src={links_gif} />
@@ -640,7 +773,7 @@ class ScriptBuilder extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className="carousel-item green white-text" href="#three!">
+                    <div className="carousel-item green white-text">
                         <div className={"row"}>
                             <div className={"col s6"}>
                                 <img className={"slider-gif-image"} src={rename_gif} />
@@ -652,7 +785,7 @@ class ScriptBuilder extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div className="carousel-item blue white-text" href="#four!">
+                    <div className="carousel-item blue white-text">
                         <div className={"row"}>
                             <div className={"col s6"}>
                                 <img className={"slider-gif-image"} src={links_gif} />
@@ -665,8 +798,8 @@ class ScriptBuilder extends React.Component {
                         </div>
                     </div>
                 </div>
+                    </>
                     : null}
-                <div className={"fixedGenerate"}>
 
                     {(this.state.timelineStatus) ?
                     <div className="show" id={"timeline-toast"}>
@@ -756,12 +889,12 @@ class ScriptBuilder extends React.Component {
                                 <div className="subheader" style={{}}>Voice Gender</div>
                                 <p id={"call-voice"}>
                                     <label>
-                                        <input name="voice" type="radio" value={"male"} id="male_voice"/>
-                                        <span>Male</span>
+                                        <input name="voice" type="radio" value={"man"} id="man_voice"/>
+                                        <span>Man</span>
                                     </label>
                                     <label>
-                                        <input name="voice" type="radio" value={"female"} id="female_voice"/>
-                                        <span>Female</span>
+                                        <input name="voice" type="radio" value={"woman"} id="woman_voice"/>
+                                        <span>Woman</span>
                                     </label>
                                 </p>
                             </li>
@@ -780,9 +913,7 @@ class ScriptBuilder extends React.Component {
                     </div>
 
 
-                    <div className={"call-button"}>
-                        <CallButton handleInput={this.callHandleInput} callPhone={this.callPhone}/>
-                    </div>
+                <div className={"fixedGenerate"}>
                     <a className="btn-large" id={"generate-button"}
                        onClick={() => {
                            this.generateJson()
@@ -801,9 +932,18 @@ class ScriptBuilder extends React.Component {
                     <div className={"loadingspinner"}></div>
                 </div> : null}
                 <div className="content">
-                    <Sidebar documentName={this.state.documentName} changeScript={this.changeScript}
+                    <Sidebar documentName={this.state.documentName}
+                             changeScript={this.changeScript}
                              documentHandleInput={this.documentHandleInput}
-                             resetHandler={this.resetHandler}/>
+                             resetHandler={this.resetHandler}
+                             accountSidHandleInput={this.accountSidHandleInput}
+                             accountSid={this.state.accountSid}
+                             authToken={this.state.authToken}
+                             authTokenHandleInput={this.authTokenHandleInput}
+                             clearCredentials={this.clearCredentials}
+                             fromPhoneNumber={this.state.fromPhoneNumber}
+                             fromPhoneNumberHandleInput={this.fromPhoneNumberHandleInput}
+                    />
                     <div
                         className="diagram-layer"
                         onKeyDown={e => {
@@ -901,6 +1041,8 @@ class ScriptBuilder extends React.Component {
 
                             const node_json = node.serialize();
                             node_json.extras['node_type'] = data.type;
+                            node_json.extras['voice_gender'] = 'man';
+                            node_json.extras['record_time'] = 4;
                             node.deSerialize(node_json, this.engine);
 
                             if (data.type !== 'diamond') {
@@ -931,13 +1073,14 @@ class ScriptBuilder extends React.Component {
                                         if (temp_model.nodes[iid]['extras']['record_time']) {
                                             document.getElementById('record-time').value = temp_model.nodes[iid]['extras']['record_time'];
                                         } else {
-                                            document.getElementById('record-time').value = 2;
+                                            document.getElementById('record-time').value = 4;
                                         }
                                         if (temp_model.nodes[iid]['extras']['voice_gender']) {
+                                            console.log(temp_model.nodes[iid]['extras']['voice_gender']);
                                             const radiobtn = document.getElementById(temp_model.nodes[iid]['extras']['voice_gender'] + '_voice');
                                             radiobtn.checked = true;
                                         } else {
-                                            const radiobtn = document.getElementById('male_voice');
+                                            const radiobtn = document.getElementById('man_voice');
                                             radiobtn.checked = true;
                                         }
                                         document.getElementById('question_text').focus();
