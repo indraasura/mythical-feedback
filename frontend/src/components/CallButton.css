@@ -118,3 +118,8 @@
         transform: scale(4);
     }
 }
+
+#search::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: white !important;
+    opacity: 0.5 !important; /* Firefox */
+}

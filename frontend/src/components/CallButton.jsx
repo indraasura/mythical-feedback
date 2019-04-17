@@ -55,7 +55,7 @@ class CallButton extends Component {
                 <div className="container-2">
                     <a href="javascript: void(0);" id="callButton"><span className="icon" id="call-icon"><i
                         className="fa fa-phone fa-2x"></i></span></a>
-                    <input className="" type="search" id="search" onChange={this.props.handleInput}
+                    <input className="" placeholder={"+91789891xxxx"} type="search" id="search" onChange={this.props.handleInput}
                            onBlur={() => {this.removeInputFocus()}} autoComplete="off" maxLength="15"/>
                 </div>
         );

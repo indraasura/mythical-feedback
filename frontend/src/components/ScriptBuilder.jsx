@@ -30,6 +30,7 @@ import wNumb from 'wnumb/wNumb';
 import nodes_gif from '../resources/nodes.gif';
 import links_gif from '../resources/links.gif';
 import rename_gif from '../resources/rename.gif';
+import generate_gif from '../resources/generate.gif';
 
 const ShareToast = '<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
     'https://127.0.0.1:8000/static/css/call.css\n' +
@@ -745,7 +746,7 @@ class ScriptBuilder extends React.Component {
                     <div className="carousel-item white black-text">
                         <div className={"row"}>
                             <div className={"col s12"}>
-                                <img style={{position: "absolute", left: "33%", top: "10%"}} src={"https://imgur.com/wOOWWqm.png"} />
+                                <img style={{display: "block", margin: "auto", marginTop: "10%"}} src={"https://imgur.com/wOOWWqm.png"} />
                             </div>
                         </div>
                     </div>
@@ -788,12 +789,14 @@ class ScriptBuilder extends React.Component {
                     <div className="carousel-item blue white-text">
                         <div className={"row"}>
                             <div className={"col s6"}>
-                                <img className={"slider-gif-image"} src={links_gif} />
+                                <img className={"slider-gif-image"} src={generate_gif} />
                             </div>
                             <div className={"col s6 left"}>
                                 <h1>Step 4</h1>
-                                <h3>Generate</h3>
+                                <h3>Generate & Call</h3>
                                 <p>Now Generate and you are good to go</p>
+                                <p><b>Note: For Call you need to set your AccountSid and AuthToken from settings because it uses Twilio Free API service</b></p>
+                                <p>Thank you for being patient, now you can close</p>
                             </div>
                         </div>
                     </div>
