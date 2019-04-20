@@ -17,12 +17,14 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf.urls.static import static
 from backend import settings
+from .views import FrontendAppView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^excel/', include('excel.urls')),
     url(r'^builder/', include('scriptbuilder.urls')),
     url(r'^autocall/', include('autocall.urls')),
+    url(r'^', FrontendAppView.as_view()),
 ]
 
 if settings.DEBUG:
