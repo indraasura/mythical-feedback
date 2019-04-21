@@ -7,6 +7,7 @@
 Django-React Webapp giving normal users a super-power to create call flow with just drag and drop feature and linking them to decide how the call should flow and then recording user feedback with transcript based on their response.
 
 [![Build Status](https://travis-ci.com/shashank-sharma/mythical-feedback.svg?branch=master)](https://travis-ci.com/shashank-sharma/mythical-feedback)
+![Heroku](http://heroku-badge.herokuapp.com/?app=mythfeed&style=flat&svg=1)
 ![versions](https://img.shields.io/pypi/pyversions/pybadges.svg)
 
 <b> I am currently still working on it and it might take 3-4 days to finalize it and make it usable for others by using twilio credentials</b>
