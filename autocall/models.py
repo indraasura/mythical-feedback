@@ -19,7 +19,7 @@ class Response(models.Model):
 
 
 class SurveyResponse(models.Model):
-    survey = models.ForeignKey(Survey)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15)
     call_status = models.CharField(max_length=20, default='NOT')
     responses = models.ManyToManyField(Response)
