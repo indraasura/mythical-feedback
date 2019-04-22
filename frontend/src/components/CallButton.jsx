@@ -12,7 +12,7 @@ class CallButton extends Component {
         document.getElementById("search").addEventListener("keyup", (event) => {
             if (event.key === "Enter") {
                 console.log(event.target.value);
-                document.getElementById("search").style.width = "10px";
+                document.getElementById("search").style.width = "0px";
                 document.getElementById("call-icon").classList.add("visible");
                 document.getElementById("call-icon").classList.remove("hidden");
                 document.getElementById('search').value = '';
@@ -39,7 +39,7 @@ class CallButton extends Component {
     }
 
     removeInputFocus() {
-        document.getElementById("search").style.width = "10px";
+        document.getElementById("search").style.width = "0px";
         document.getElementById("call-icon").classList.add("visible");
         document.getElementById("call-icon").classList.remove("hidden");
         document.getElementById('search').value = '';

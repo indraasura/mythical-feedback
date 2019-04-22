@@ -10,19 +10,17 @@
     position: relative;
 }
 .container-2 input#search{
-    width: 10px;
+    width: 0;
     height: 50px;
     background: #2196f3;
     border: none;
     font-size: 16pt;
     float: left;
-    color: #262626;
-    padding-left: 35px;
+    padding-left: 50px;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 25px;
     color: #fff;
-    padding-left: 40px;
 
     -webkit-transition: width .55s ease;
     -moz-transition: width .55s ease;
@@ -49,8 +47,9 @@
     position: absolute;
     top: -5px;
     left: -5px;
-    margin-left: 17px;
-    margin-top: 17px;
+    /*margin-left: 17px;*/
+    /*margin-top: 17px;*/
+    padding: 17px;
     z-index: 1;
     color: white;
 }
