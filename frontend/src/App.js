@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Main from './components/main';
-import Footer from './components/footer';
+// import Footer from './components/footer';
 import ExcelData from './components/exceldata';
 import ScriptBuilder from './components/ScriptBuilder';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import M from 'materialize-css'
 import './App.css'
 

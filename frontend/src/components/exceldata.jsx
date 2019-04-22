@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import M from 'materialize-css';
-import Data from '../data.json'
+// import Data from '../data.json'
 import './exceldata.css';
 import { config } from '../resources/config';
 

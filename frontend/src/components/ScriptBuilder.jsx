@@ -32,11 +32,11 @@ import links_gif from '../resources/links.gif';
 import rename_gif from '../resources/rename.gif';
 import generate_gif from '../resources/generate.gif';
 
-const ShareToast = '<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
-    'https://127.0.0.1:8000/static/css/call.css\n' +
-    'https://127.0.0.1:8000/static/js/call.js\n' +
-    '&lt;div class=&quot;mythical-call&quot;&gt;&lt;/div&gt;\n' +
-    '</textarea>';
+// const ShareToast = '<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
+//     'https://127.0.0.1:8000/static/css/call.css\n' +
+//     'https://127.0.0.1:8000/static/js/call.js\n' +
+//     '&lt;div class=&quot;mythical-call&quot;&gt;&lt;/div&gt;\n' +
+//     '</textarea>';
 
 
 class ScriptBuilder extends React.Component {
@@ -134,7 +134,7 @@ class ScriptBuilder extends React.Component {
         M.Range.init(array_of_dom_elements);
 
         const elems = document.querySelectorAll('.carousel');
-        const instances = M.Carousel.init(elems, {indicators: true, fullWidth: true,
+        M.Carousel.init(elems, {indicators: true, fullWidth: true,
             noWrap: true,
             enableTouch: false,});
         const instance = M.Carousel.getInstance(document.getElementById("helper-slider"));
@@ -599,9 +599,9 @@ class ScriptBuilder extends React.Component {
                 // Yes, I can do with sockets but I tried to avoid it so please
                 // Why avoid ? I wanted to have less dependency so that I can deploy it on heroku else they charge :c
                 const timer = setInterval(() => {
-                    let time = this.state.timelineTimer += 1;
+                    let time = this.state.timelineTimer;
                     this.setState({
-                        timelineTimer: time
+                        timelineTimer: time + 1
                     });
                     fetch(config.API_URL + '/autocall/survey/responses/' + this.state.responseId, {
                         method: 'GET'
@@ -746,14 +746,16 @@ class ScriptBuilder extends React.Component {
                     <div className="carousel-item white black-text">
                         <div className={"row"}>
                             <div className={"col s12"}>
-                                <img style={{display: "block", margin: "auto", marginTop: "10%"}} src={"https://imgur.com/wOOWWqm.png"} />
+                                <img style={{display: "block", margin: "auto", marginTop: "10%"}}
+                                     src={"https://imgur.com/wOOWWqm.png"}
+                                     alt={"MythFeed Logo"}/>
                             </div>
                         </div>
                     </div>
                     <div className="carousel-item red white-text">
                         <div className={"row"}>
                             <div className={"col s6"}>
-                        <img className={"slider-gif-image"} src={nodes_gif} />
+                        <img className={"slider-gif-image"} src={nodes_gif} alt={"Drag Drop GIF"}/>
                             </div>
                             <div className={"col s6 left"}>
                                 <h1>Step 1</h1>
@@ -765,7 +767,7 @@ class ScriptBuilder extends React.Component {
                     <div className="carousel-item teal white-text">
                         <div className={"row"}>
                             <div className={"col s6"}>
-                                <img className={"slider-gif-image"} src={links_gif} />
+                                <img className={"slider-gif-image"} src={links_gif} alt={"Connect GIF"}/>
                             </div>
                             <div className={"col s6 left"}>
                                 <h1>Step 2</h1>
@@ -777,7 +779,7 @@ class ScriptBuilder extends React.Component {
                     <div className="carousel-item green white-text">
                         <div className={"row"}>
                             <div className={"col s6"}>
-                                <img className={"slider-gif-image"} src={rename_gif} />
+                                <img className={"slider-gif-image"} src={rename_gif} alt={"Configure GIF"}/>
                             </div>
                             <div className={"col s6 left"}>
                                 <h1>Step 3</h1>
@@ -789,7 +791,7 @@ class ScriptBuilder extends React.Component {
                     <div className="carousel-item blue white-text">
                         <div className={"row"}>
                             <div className={"col s6"}>
-                                <img className={"slider-gif-image"} src={generate_gif} />
+                                <img className={"slider-gif-image"} src={generate_gif} alt={"Generate GIF"}/>
                             </div>
                             <div className={"col s6 left"}>
                                 <h1>Step 4</h1>

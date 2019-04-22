@@ -23,7 +23,7 @@ class Sidebar extends Component {
         // // });
         document.addEventListener('DOMContentLoaded', function () {
             const elems = document.querySelectorAll('.tooltipped');
-            const instances = M.Tooltip.init(elems, {enterDelay: 300});
+            M.Tooltip.init(elems, {enterDelay: 300});
         });
 
         // // TODO: Get some help, change it, do something
@@ -100,7 +100,6 @@ class Sidebar extends Component {
                            value={this.props.documentName}
                            onChange={ this.props.documentHandleInput.bind(this) } />
                     <a className={"dropdown-trigger tooltipped"}
-                       href={""}
                        data-target='dropdown1'
                        data-position="bottom" data-tooltip="Options"><i className="material-icons document-dropdown white-text">arrow_drop_down</i></a>
                     <ul id='dropdown1' className='dropdown-content document-dropdown-options' style={{left: "24px !important;"}}>
@@ -112,7 +111,7 @@ class Sidebar extends Component {
                     <li className={"side-hover"}>
                         <button style={{height: "60px", marginLeft: "-2px"}} className={"more tooltipped"}
                                 data-position="right" data-tooltip="Home">
-                            <div><img style={{width: "50px"}} src={"https://imgur.com/wOOWWqm.png"} /></div>
+                            <div><img style={{width: "50px"}} src={"https://imgur.com/wOOWWqm.png"} alt={"MythFeed Logo"}/></div>
                         </button>
                     </li>
                     <li className={"side-hover"}>
