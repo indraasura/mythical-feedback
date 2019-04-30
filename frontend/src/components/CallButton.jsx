@@ -5,7 +5,6 @@ import './CallButton.css';
 class CallButton extends Component {
     constructor(props) {
         super(props);
-        console.log('wwww', props);
     }
 
     componentDidMount() {

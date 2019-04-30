@@ -63,6 +63,7 @@ class ScriptBuilder extends React.Component {
         timelineValue: 0,           // Timeline value determines the status, ongoing, answered etc
         timelineTimer: 0,           // Timer is the time elapsed by call
         helperSlider: false,
+        sliderStarted: false,
         accountSid: '',
         authToken: '',
         fromPhoneNumber: '',
@@ -137,33 +138,6 @@ class ScriptBuilder extends React.Component {
         M.Carousel.init(elems, {indicators: true, fullWidth: true,
             noWrap: true,
             enableTouch: false,});
-        const instance = M.Carousel.getInstance(document.getElementById("helper-slider"));
-        if (this.state.helperSlider) {
-            const timer = setInterval(() => {
-                let slider_timer = this.state.sliderTimer;
-                if (slider_timer === 38) {
-                    this.setState({
-                        tempColor: 'white',
-                    });
-                    instance.next()
-                } else if (slider_timer === 31) {
-                    instance.next()
-                } else if (slider_timer === 22) {
-                    instance.next()
-                } else if (slider_timer === 15) {
-                    instance.next()
-                } else if (slider_timer === 9) {
-                    instance.next()
-                }
-                if (slider_timer <= 0) {
-                    clearInterval(timer);
-                } else {
-                    this.setState({
-                        sliderTimer: slider_timer - 1
-                    })
-                }
-            }, 1000)
-        }
     }
 
     componentWillUnmount() {
@@ -515,6 +489,40 @@ class ScriptBuilder extends React.Component {
         return String(Math.floor(val / 60)).padStart(2,0) + ":" + String(val % 60).padStart(2,0)
     }
 
+    startHelperSlider() {
+        this.setState({
+            'sliderStarted': true,
+        });
+        const helperSliderElement = document.getElementById("helper-slider");
+        if (helperSliderElement) {
+            const instance = M.Carousel.getInstance(helperSliderElement);
+            if (this.state.helperSlider) {
+                const timer = setInterval(() => {
+                    let slider_timer = this.state.sliderTimer;
+                    if (slider_timer === 38) {
+                        this.setState({
+                            tempColor: 'white',
+                        });
+                        instance.next()
+                    } else if (slider_timer === 31) {
+                        instance.next()
+                    } else if (slider_timer === 22) {
+                        instance.next()
+                    } else if (slider_timer === 15) {
+                        instance.next()
+                    }
+                    if (slider_timer <= 0) {
+                        clearInterval(timer);
+                    } else {
+                        this.setState({
+                            sliderTimer: slider_timer - 1
+                        })
+                    }
+                }, 1000)
+            }
+        }
+    }
+
     // Call Button input value to be saved in state
     callHandleInput = (e) => {
         this.setState({
@@ -736,77 +744,81 @@ class ScriptBuilder extends React.Component {
                 {(this.state.helperSlider) ?
                     <>
                         <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 6, backgroundColor: "rgba(0,0,0,0)"}}></div>
-                    <a onClick={ () => {this.closeSliderHelper()}}><i className="material-icons restore-close-button"
-                                                                      style={{marginLeft: "0px", right: 0, zIndex: 7, fontSize: "36px",
-                                                                          position: "absolute", cursor: "pointer", color: this.state.tempColor}}>close</i></a>
-                <div className="carousel carousel-slider helper-slider" id={"helper-slider"}>
-                    <div className="center" style={{position: "absolute", bottom: 0, zIndex: 2}}>
-                        <h1 style={{color: this.state.tempColor}}>{this.prettifyTime(this.state.sliderTimer)}</h1>
-                    </div>
-                    <div className="carousel-item white black-text">
-                        <div className={"row"}>
-                            <div className={"col s12"}>
-                                <img style={{display: "block", margin: "auto", marginTop: "10%"}}
-                                     src={"https://imgur.com/wOOWWqm.png"}
-                                     alt={"MythFeed Logo"}/>
+                        <a onClick={ () => {this.closeSliderHelper()}}><i className="material-icons restore-close-button"
+                                                                          style={{marginLeft: "0px", right: 0, zIndex: 7, fontSize: "36px",
+                                                                              position: "absolute", cursor: "pointer", color: this.state.tempColor}}>close</i></a>
+                        {(this.state.sliderStarted) ?
+                            <div className="center" style={{position: "absolute", bottom: 0, zIndex: 7}}>
+                                <h1 style={{color: this.state.tempColor}}>{this.prettifyTime(this.state.sliderTimer)}</h1>
+                            </div>
+                            :
+                            <button onClick={() => {this.startHelperSlider()}} className={"btn btn-large slider-button"}>Start</button>
+                        }
+                        <div className="carousel carousel-slider helper-slider" id={"helper-slider"}>
+                            <div className="carousel-item white black-text">
+                                <div className={"row"}>
+                                    <div className={"col s12"}>
+                                        <img style={{display: "block", margin: "auto", marginTop: "10%"}}
+                                             src={"https://imgur.com/wOOWWqm.png"}
+                                             alt={"MythFeed Logo"}/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="carousel-item red white-text">
+                                <div className={"row"}>
+                                    <div className={"col s6"}>
+                                        <img className={"slider-gif-image"} src={nodes_gif} alt={"Drag Drop GIF"}/>
+                                    </div>
+                                    <div className={"col s6 left"}>
+                                        <h1>Step 1</h1>
+                                        <h3>Drag & Drop</h3>
+                                        <p>You must use only 1 source node and 1 end node, in short these 2 nodes are required</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="carousel-item teal white-text">
+                                <div className={"row"}>
+                                    <div className={"col s6"}>
+                                        <img className={"slider-gif-image"} src={links_gif} alt={"Connect GIF"}/>
+                                    </div>
+                                    <div className={"col s6 left"}>
+                                        <h1>Step 2</h1>
+                                        <h3>Connect</h3>
+                                        <p>Connecting every node is important, you can't leave any node isolated</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="carousel-item green white-text">
+                                <div className={"row"}>
+                                    <div className={"col s6"}>
+                                        <img className={"slider-gif-image"} src={rename_gif} alt={"Configure GIF"}/>
+                                    </div>
+                                    <div className={"col s6 left"}>
+                                        <h1>Step 3</h1>
+                                        <h3>Configure</h3>
+                                        <p>Double click on any node, configure as your requirements</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="carousel-item blue white-text">
+                                <div className={"row"}>
+                                    <div className={"col s6"}>
+                                        <img className={"slider-gif-image"} src={generate_gif} alt={"Generate GIF"}/>
+                                    </div>
+                                    <div className={"col s6 left"}>
+                                        <h1>Step 4</h1>
+                                        <h3>Generate & Call</h3>
+                                        <p>Now Generate and you are good to go</p>
+                                        <p><b>Note: For Call you need to set your AccountSid and AuthToken from settings because it uses Twilio Free API service</b></p>
+                                        <p>Thank you for being patient, now you can close</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="carousel-item red white-text">
-                        <div className={"row"}>
-                            <div className={"col s6"}>
-                        <img className={"slider-gif-image"} src={nodes_gif} alt={"Drag Drop GIF"}/>
-                            </div>
-                            <div className={"col s6 left"}>
-                                <h1>Step 1</h1>
-                                <h3>Drag & Drop</h3>
-                                <p>You must use only 1 source node and 1 end node, in short these 2 nodes are required</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="carousel-item teal white-text">
-                        <div className={"row"}>
-                            <div className={"col s6"}>
-                                <img className={"slider-gif-image"} src={links_gif} alt={"Connect GIF"}/>
-                            </div>
-                            <div className={"col s6 left"}>
-                                <h1>Step 2</h1>
-                                <h3>Connect</h3>
-                                <p>Connecting every node is important, you can't leave any node isolated</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="carousel-item green white-text">
-                        <div className={"row"}>
-                            <div className={"col s6"}>
-                                <img className={"slider-gif-image"} src={rename_gif} alt={"Configure GIF"}/>
-                            </div>
-                            <div className={"col s6 left"}>
-                                <h1>Step 3</h1>
-                                <h3>Configure</h3>
-                                <p>Double click on any node, configure as your requirements</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="carousel-item blue white-text">
-                        <div className={"row"}>
-                            <div className={"col s6"}>
-                                <img className={"slider-gif-image"} src={generate_gif} alt={"Generate GIF"}/>
-                            </div>
-                            <div className={"col s6 left"}>
-                                <h1>Step 4</h1>
-                                <h3>Generate & Call</h3>
-                                <p>Now Generate and you are good to go</p>
-                                <p><b>Note: For Call you need to set your AccountSid and AuthToken from settings because it uses Twilio Free API service</b></p>
-                                <p>Thank you for being patient, now you can close</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                     </>
                     : null}
 
-                    {(this.state.timelineStatus) ?
+                {(this.state.timelineStatus) ?
                     <div className="show" id={"timeline-toast"}>
                         <div id="lineCont">
                             <div id="line">
@@ -845,77 +857,77 @@ class ScriptBuilder extends React.Component {
                     </div>
                     : null}
 
-                    {(this.state.resetState) ?
-                        <>
-                            <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 2}}></div>
-                            <div className="show" id={"custom-toast"}>
-                                <span>Are you sure ?</span>
-                                <button className="btn-flat toast-action orange-text"
-                                        style={{marginleft: "5px"}}
-                                        onClick={() => {
-                                            this.resetDocument()
-                                        }}>Yes
-                                </button>
-                                <span style={{cursor: "pointer"}} onClick={() => {
-                                    this.setState({
-                                        resetState: false,
-                                    })
-                                }}><i className="material-icons restore-close-button white-text"
-                                      style={{marginLeft: "0px", position: "absolute"}}>close</i></span>
-                            </div>
-                        </>
-                        : null}
-                    {(this.state.restoreState) ?
-                        <>
-                            <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 2}}></div>
-                            <div className="show" id={"custom-toast"}>
-                                <span>Previous Session Found</span>
-                                <button className="btn-flat toast-action orange-text"
-                                        style={{marginleft: "5px"}}
-                                        onClick={() => {
-                                            this.loadLocalStorage()
-                                        }}>Restore
-                                </button>
-                                <span style={{cursor: "pointer"}} onClick={() => {
-                                    this.closeRestoreCard()
-                                }}><i className="material-icons restore-close-button white-text"
-                                      style={{marginLeft: "0px", position: "absolute"}}>close</i></span>
-                            </div>
-                        </>
-                        : null}
-                    <div>
-                        <ul id="slide-out-right" className="sidenav right-side-nav" style={{padding: "20px"}}>
-                            <li>
-                                <div className="subheader" style={{}}>Question</div>
-                                <input placeholder="Enter your question" id="question_text" type="text"
-                                       className="validate"/>
-                            </li>
-                            <li>
-                                <div className="subheader" style={{}}>Voice Gender</div>
-                                <p id={"call-voice"}>
-                                    <label>
-                                        <input name="voice" type="radio" value={"man"} id="man_voice"/>
-                                        <span>Man</span>
-                                    </label>
-                                    <label>
-                                        <input name="voice" type="radio" value={"woman"} id="woman_voice"/>
-                                        <span>Woman</span>
-                                    </label>
-                                </p>
-                            </li>
-                            <li>
-                                <div className="subheader" style={{}}>Recording Time</div>
-                                <p className="range-field">
-                                    <input type="range" step="1" id="record-time" min="1" max="10"/>
-                                </p>
-                            </li>
-                            <li>
-                                <a href="#" className="modal-close waves-effect waves-green btn-flat" onClick={() => {
-                                    this.handleInput()
-                                }}>Submit</a>
-                            </li>
-                        </ul>
-                    </div>
+                {(this.state.resetState) ?
+                    <>
+                        <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 2}}></div>
+                        <div className="show" id={"custom-toast"}>
+                            <span>Are you sure ?</span>
+                            <button className="btn-flat toast-action orange-text"
+                                    style={{marginleft: "5px"}}
+                                    onClick={() => {
+                                        this.resetDocument()
+                                    }}>Yes
+                            </button>
+                            <span style={{cursor: "pointer"}} onClick={() => {
+                                this.setState({
+                                    resetState: false,
+                                })
+                            }}><i className="material-icons restore-close-button white-text"
+                                  style={{marginLeft: "0px", position: "absolute"}}>close</i></span>
+                        </div>
+                    </>
+                    : null}
+                {(this.state.restoreState) ?
+                    <>
+                        <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 2}}></div>
+                        <div className="show" id={"custom-toast"}>
+                            <span>Previous Session Found</span>
+                            <button className="btn-flat toast-action orange-text"
+                                    style={{marginleft: "5px"}}
+                                    onClick={() => {
+                                        this.loadLocalStorage()
+                                    }}>Restore
+                            </button>
+                            <span style={{cursor: "pointer"}} onClick={() => {
+                                this.closeRestoreCard()
+                            }}><i className="material-icons restore-close-button white-text"
+                                  style={{marginLeft: "0px", position: "absolute"}}>close</i></span>
+                        </div>
+                    </>
+                    : null}
+                <div>
+                    <ul id="slide-out-right" className="sidenav right-side-nav" style={{padding: "20px"}}>
+                        <li>
+                            <div className="subheader" style={{}}>Question</div>
+                            <input placeholder="Enter your question" id="question_text" type="text"
+                                   className="validate"/>
+                        </li>
+                        <li>
+                            <div className="subheader" style={{}}>Voice Gender</div>
+                            <p id={"call-voice"}>
+                                <label>
+                                    <input name="voice" type="radio" value={"man"} id="man_voice"/>
+                                    <span>Man</span>
+                                </label>
+                                <label>
+                                    <input name="voice" type="radio" value={"woman"} id="woman_voice"/>
+                                    <span>Woman</span>
+                                </label>
+                            </p>
+                        </li>
+                        <li>
+                            <div className="subheader" style={{}}>Recording Time</div>
+                            <p className="range-field">
+                                <input type="range" step="1" id="record-time" min="1" max="10"/>
+                            </p>
+                        </li>
+                        <li>
+                            <a href="#" className="modal-close waves-effect waves-green btn-flat" onClick={() => {
+                                this.handleInput()
+                            }}>Submit</a>
+                        </li>
+                    </ul>
+                </div>
 
 
                 <div className={"fixedGenerate"}>

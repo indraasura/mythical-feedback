@@ -377,3 +377,11 @@ span .value {
     margin-top: 50px;
     margin-left: 40px;
 }
+
+.slider-button {
+    z-index: 7;
+    position: absolute;
+    bottom: 0;
+    margin: 20px;
+    background-color: black;
+}

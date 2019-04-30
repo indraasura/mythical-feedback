@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'mythfeed.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'mythfeed.herokuapp.com', '32e17093.ngrok.io']
 
 
 # Application definition
@@ -175,4 +175,4 @@ AUTH_USER_MODEL = 'accounts.User'
 APPEND_SLASH = False
 ACCOUNT_SID = config("ACCOUNT_SID")
 AUTH_TOKEN = config("AUTH_TOKEN")
-WEBSITE_URL = 'https://00f3d5b1.ngrok.io/autocall'
+WEBSITE_URL = 'https://32e17093.ngrok.io/autocall'
