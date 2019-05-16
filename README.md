@@ -10,7 +10,7 @@ Django-React Webapp giving normal users a super-power to create call flow with j
 ![Heroku](http://heroku-badge.herokuapp.com/?app=mythfeed&style=flat&svg=1)
 ![versions](https://img.shields.io/pypi/pyversions/pybadges.svg)
 
-<b> I am currently still working on it and it might take 3-4 days to finalize it and make it usable for others by using twilio credentials</b>
+<b>Usable, testing required</b>
 
 <img src="https://imgur.com/ITSaL2r.jpg" />
 
@@ -102,7 +102,7 @@ Make sure you run both of the things in-order to make it run in your local machi
 
 ### Twilio
 
-Not that important but if you want to test the calling feature then follow the steps<br />
+Not that important but if you want to test the calling feature locally then follow the steps<br />
 Make sure you get the callable number from twilio.<br />
 Now since making a call to your number requires twilio to have some callback url so we will use ngrok to make it work.
 
