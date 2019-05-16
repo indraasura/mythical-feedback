@@ -16,22 +16,10 @@ class Sidebar extends Component {
     };
 
     componentDidMount() {
-        // const elem = document.querySelector(".sidenav");
-        // const instance = M.Sidenav.init(elem, {
-        //     edge: "left",
-        //     inDuration: 250
-        // // });
         document.addEventListener('DOMContentLoaded', function () {
             const elems = document.querySelectorAll('.tooltipped');
             M.Tooltip.init(elems, {enterDelay: 300});
         });
-
-        // // TODO: Get some help, change it, do something
-        // setTimeout(() => {
-        //     const elem = document.getElementsByClassName("subsidenav")[0];
-        //     elem.style.transform = "translateX(3.5%)";
-        // }, 5)
-
     }
 
     componentWillMount() {
@@ -63,8 +51,12 @@ class Sidebar extends Component {
     }
 
     switchFolderNav() {
+        const elem = document.getElementsByClassName("subsidenav")[0];
+        elem.style.transform = "translateX(0%)";
         this.setState({
-            mainSideNav: 'folder'
+            mainSideNav: 'folder',
+            hideIcon: 'keyboard_arrow_left',
+            hideIconText: 'close'
         });
         this.getFileList();
     }
@@ -87,9 +79,23 @@ class Sidebar extends Component {
     }
 
     switchSettingsNav() {
+        const elem = document.getElementsByClassName("subsidenav")[0];
+        elem.style.transform = "translateX(0%)";
         this.setState({
-            mainSideNav: 'settings'
+            mainSideNav: 'settings',
+            hideIcon: 'keyboard_arrow_left',
+            hideIconText: 'close'
         });
+    }
+
+    switchAddElements() {
+        const elem = document.getElementsByClassName("subsidenav")[0];
+        elem.style.transform = "translateX(0%)";
+        this.setState({
+            mainSideNav: 'create',
+            hideIcon: 'keyboard_arrow_left',
+            hideIconText: 'close'
+        })
     }
 
     render() {
@@ -102,7 +108,7 @@ class Sidebar extends Component {
                     <a className={"dropdown-trigger tooltipped"}
                        data-target='dropdown1'
                        data-position="bottom" data-tooltip="Options"><i className="material-icons document-dropdown white-text">arrow_drop_down</i></a>
-                    <ul id='dropdown1' className='dropdown-content document-dropdown-options' style={{left: "24px !important;"}}>
+                    <ul id='dropdown1' className='dropdown-content document-dropdown-options' style={{left: "24px !important"}}>
                         <li className={"white-text"} onClick={() => {this.props.resetHandler()}}><span style={{cursor: "pointer"}}><i className="center-icon material-icons">create</i>new</span></li>
                     </ul>
                 </div>
@@ -124,9 +130,7 @@ class Sidebar extends Component {
                         <button style={{height: "60px"}} className={"more side-buttons tooltipped"}
                                 data-position="right" data-tooltip="Add Elements"
                                 onClick={() => {
-                                    this.setState({
-                                        mainSideNav: 'create'
-                                    })
+                                    this.switchAddElements()
                                 }}>
                             <div><i className="icon-side material-icons white-text">add</i></div>
                         </button>
