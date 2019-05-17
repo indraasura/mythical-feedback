@@ -31,6 +31,8 @@ import nodes_gif from '../resources/nodes.gif';
 import links_gif from '../resources/links.gif';
 import rename_gif from '../resources/rename.gif';
 import generate_gif from '../resources/generate.gif';
+import fire_load from '../resources/fire_load_small.gif';
+
 
 // const ShareToast = '<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
 //     'https://127.0.0.1:8000/static/css/call.css\n' +
@@ -734,6 +736,10 @@ class ScriptBuilder extends React.Component {
         })
     }
 
+    imageLoadHandler(image,e) {
+        e.target.src = image;
+    }
+
     render() {
         return (
             <div>
@@ -759,7 +765,8 @@ class ScriptBuilder extends React.Component {
                                 <div className={"row"}>
                                     <div className={"col s12"}>
                                         <img style={{display: "block", margin: "auto", marginTop: "10%"}}
-                                             src={"https://imgur.com/wOOWWqm.png"}
+                                             src={fire_load}
+                                             onLoad={this.imageLoadHandler.bind(this,'https://imgur.com/wOOWWqm.png')}
                                              alt={"MythFeed Logo"}/>
                                     </div>
                                 </div>
