@@ -14,6 +14,9 @@ production = False
 
 if config('PRODUCTION', default='False').lower() == 'true':
     production = True
+    call_url = 'mythfeed.herokuapp.com'
+else:
+    call_url = '12345.ngrok.io'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +31,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'mythfeed.herokuapp.com', '32e17093.ngrok.io']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', call_url]
 
 
 # Application definition
@@ -175,4 +178,4 @@ AUTH_USER_MODEL = 'accounts.User'
 APPEND_SLASH = False
 ACCOUNT_SID = config("ACCOUNT_SID")
 AUTH_TOKEN = config("AUTH_TOKEN")
-WEBSITE_URL = 'https://32e17093.ngrok.io/autocall'
+WEBSITE_URL = 'https://' + call_url + '/autocall'
