@@ -34,6 +34,7 @@ import generate_gif from '../resources/generate.gif';
 import fire_load from '../resources/fire_load_small.gif';
 
 
+// TODO: Share toast on generation
 // const ShareToast = '<textarea style="font-size:12px;color: white" rows="8" cols="40" id="textarea2" class="materialize-textarea" data-length="120">' +
 //     'https://127.0.0.1:8000/static/css/call.css\n' +
 //     'https://127.0.0.1:8000/static/js/call.js\n' +
@@ -108,7 +109,7 @@ class ScriptBuilder extends React.Component {
         })
 
         const helper_slider = localStorage.getItem("helper_slider");
-        if (!helper_slider){
+        if (!helper_slider) {
             this.setState({
                 helperSlider: true,
             });
@@ -137,9 +138,11 @@ class ScriptBuilder extends React.Component {
         M.Range.init(array_of_dom_elements);
 
         const elems = document.querySelectorAll('.carousel');
-        M.Carousel.init(elems, {indicators: true, fullWidth: true,
+        M.Carousel.init(elems, {
+            indicators: true, fullWidth: true,
             noWrap: true,
-            enableTouch: false,});
+            enableTouch: false,
+        });
     }
 
     componentWillUnmount() {
@@ -488,7 +491,7 @@ class ScriptBuilder extends React.Component {
 
     // To show time elapsed when we call and then prettify it
     prettifyTime(val) {
-        return String(Math.floor(val / 60)).padStart(2,0) + ":" + String(val % 60).padStart(2,0)
+        return String(Math.floor(val / 60)).padStart(2, 0) + ":" + String(val % 60).padStart(2, 0)
     }
 
     startHelperSlider() {
@@ -749,16 +752,23 @@ class ScriptBuilder extends React.Component {
 
                 {(this.state.helperSlider) ?
                     <>
-                        <div className="sidenav-overlay" style={{display: "block", opacity: 1, zIndex: 6, backgroundColor: "rgba(0,0,0,0)"}}></div>
-                        <a onClick={ () => {this.closeSliderHelper()}}><i className="material-icons restore-close-button"
-                                                                          style={{marginLeft: "0px", right: 0, zIndex: 7, fontSize: "36px",
-                                                                              position: "absolute", cursor: "pointer", color: this.state.tempColor}}>close</i></a>
+                        <div className={"sidenav-overlay"}
+                             style={{display: "block", opacity: 1, zIndex: 6, backgroundColor: "rgba(0,0,0,0)"}}>&nbsp;</div>
+                        <a onClick={() => {
+                            this.closeSliderHelper()
+                        }}><i className="material-icons restore-close-button"
+                              style={{
+                                  marginLeft: "0px", right: 0, zIndex: 7, fontSize: "36px",
+                                  position: "absolute", cursor: "pointer", color: this.state.tempColor
+                              }}>close</i></a>
                         {(this.state.sliderStarted) ?
                             <div className="center" style={{position: "absolute", bottom: 0, zIndex: 7}}>
                                 <h1 style={{color: this.state.tempColor}}>{this.prettifyTime(this.state.sliderTimer)}</h1>
                             </div>
                             :
-                            <button onClick={() => {this.startHelperSlider()}} className={"btn btn-large slider-button"}>Start</button>
+                            <button onClick={() => {
+                                this.startHelperSlider()
+                            }} className={"btn btn-large slider-button"}>Start</button>
                         }
                         <div className="carousel carousel-slider helper-slider" id={"helper-slider"}>
                             <div className="carousel-item white black-text">
@@ -779,7 +789,8 @@ class ScriptBuilder extends React.Component {
                                     <div className={"col s6 left"}>
                                         <h1>Step 1</h1>
                                         <h3>Drag & Drop</h3>
-                                        <p>You must use only 1 source node and 1 end node, in short these 2 nodes are required</p>
+                                        <p>You must use only 1 source node and 1 end node, in short these 2 nodes are
+                                            required</p>
                                     </div>
                                 </div>
                             </div>
@@ -816,7 +827,8 @@ class ScriptBuilder extends React.Component {
                                         <h1>Step 4</h1>
                                         <h3>Generate & Call</h3>
                                         <p>Now Generate and you are good to go</p>
-                                        <p><b>Note: For Call you need to set your AccountSid and AuthToken from settings because it uses Twilio Free API service</b></p>
+                                        <p><b>Note: For Call you need to set your AccountSid and AuthToken from settings
+                                            because it uses Twilio Free API service</b></p>
                                         <p>Thank you for being patient, now you can close</p>
                                     </div>
                                 </div>
@@ -829,27 +841,37 @@ class ScriptBuilder extends React.Component {
                     <div className="show" id={"timeline-toast"}>
                         <div id="lineCont">
                             <div id="line">
-                                <div className={"circle-timeline " + (this.state.timelineValue > 0 ? 'done ' : '') + (this.state.timelineValue === 1 ? 'timeline-progress-animation' : '')}  id={"circle-0"} style={{left: '0%'}}>
+                                <div
+                                    className={"circle-timeline " + (this.state.timelineValue > 0 ? 'done ' : '') + (this.state.timelineValue === 1 ? 'timeline-progress-animation' : '')}
+                                    id={"circle-0"} style={{left: '0%'}}>
                                     <div className="popupSpan white-text">
                                         queued
                                     </div>
                                 </div>
-                                <div className={"circle-timeline " + (this.state.timelineValue > 1 ? 'done ' : '') + (this.state.timelineValue === 2 ? 'timeline-progress-animation' : '')} id={"circle-1"} style={{left: '25%'}}>
+                                <div
+                                    className={"circle-timeline " + (this.state.timelineValue > 1 ? 'done ' : '') + (this.state.timelineValue === 2 ? 'timeline-progress-animation' : '')}
+                                    id={"circle-1"} style={{left: '25%'}}>
                                     <div className="popupSpan white-text">
                                         initiated
                                     </div>
                                 </div>
-                                <div className={"circle-timeline " + (this.state.timelineValue > 2 ? 'done ' : '') + (this.state.timelineValue === 3 ? 'timeline-progress-animation' : '')} id={"circle-2"} style={{left: '50%'}}>
+                                <div
+                                    className={"circle-timeline " + (this.state.timelineValue > 2 ? 'done ' : '') + (this.state.timelineValue === 3 ? 'timeline-progress-animation' : '')}
+                                    id={"circle-2"} style={{left: '50%'}}>
                                     <div className="popupSpan white-text">
                                         ringing
                                     </div>
                                 </div>
-                                <div className={"circle-timeline " + (this.state.timelineValue > 3 ? 'done ' : '') + (this.state.timelineValue === 4 ? 'timeline-progress-animation' : '')} id={"circle-3"} style={{left: '75%'}}>
+                                <div
+                                    className={"circle-timeline " + (this.state.timelineValue > 3 ? 'done ' : '') + (this.state.timelineValue === 4 ? 'timeline-progress-animation' : '')}
+                                    id={"circle-3"} style={{left: '75%'}}>
                                     <div className="popupSpan white-text">
                                         answered
                                     </div>
                                 </div>
-                                <div className={"circle-timeline " + (this.state.timelineValue > 4 ? 'done ' : '') + (this.state.timelineValue === 5 ? 'timeline-progress-animation' : '')} id={"circle-4"} style={{left: '99%'}}>
+                                <div
+                                    className={"circle-timeline " + (this.state.timelineValue > 4 ? 'done ' : '') + (this.state.timelineValue === 5 ? 'timeline-progress-animation' : '')}
+                                    id={"circle-4"} style={{left: '99%'}}>
                                     <div className="popupSpan white-text">
                                         completed
                                     </div>
@@ -997,13 +1019,13 @@ class ScriptBuilder extends React.Component {
                             let node = null;
                             const points = this.engine.getRelativeMousePoint(event);
                             if (data.type === 'in') {
-                                node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'peru');
+                                node = new DefaultNodeModel('Node ' + (nodesCount + 1), '#757575');
                                 node.addPort(new DefaultPortModel(true, 'in-1', 'In'));
                             } else if (data.type === 'out') {
-                                node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'hotpink');
+                                node = new DefaultNodeModel('Node ' + (nodesCount + 1), '#757575');
                                 node.addPort(new DefaultPortModel(false, 'out-1', 'Out'));
                             } else if (data.type === 'out-in') {
-                                node = new DefaultNodeModel('Node ' + (nodesCount + 1), 'hotpink');
+                                node = new DefaultNodeModel('Node ' + (nodesCount + 1), '#757575');
                                 node.addPort(new DefaultPortModel(false, 'out-in-11', 'In'));
                                 node.addPort(new DefaultPortModel(true, 'out-in-12', 'Out'));
                             } else {

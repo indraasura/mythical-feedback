@@ -35,7 +35,7 @@ class LoginComponent extends Component {
                         </div>
                     </div>
                     <div className={"col s8 logo-background"} style={{backgroundColor: this.state.backgroundColor, minHeight: "100vh"}}>
-                        <img className={"logo-background"} style={{display: "block", margin: "auto", marginTop: "10%", width: "60%"}} src={this.state.mythicalLogo} alt={"Mythical Logo"}/>
+                        <img className={"logo-background"} style={{display: "block", margin: "auto", marginTop: "20%", width: "40%"}} src={this.state.mythicalLogo} alt={"Mythical Logo"}/>
                     </div>
                 </div>
             </div>
