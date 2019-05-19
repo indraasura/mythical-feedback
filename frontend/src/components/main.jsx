@@ -7,6 +7,7 @@ import M from 'materialize-css'
 class Main extends Component {
     state = {  }
     componentDidMount(){
+        // document.getElementsByClassName('main-loading-screen')[0].style.visibility = 'hidden';
         M.AutoInit()
     }
     render() { 
