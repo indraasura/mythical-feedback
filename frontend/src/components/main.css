@@ -1,0 +1,15 @@
+.main-background-grad-1 {
+    height: 100vh;
+    background-color:  	#FE6518; /* For browsers that do not support gradients */
+    background-image: linear-gradient(to bottom, #FE6518, #DB09A0); /* Standard syntax (must be last) */
+}
+.main-background-grad-2 {
+    height: 100vh;
+    background-color: #DB09A0; /* For browsers that do not support gradients */
+    background-image: linear-gradient(to bottom, #DB09A0, #7b1fa2); /* Standard syntax (must be last) */
+}
+.main-background-grad-3 {
+    height: 100vh;
+    background-color: #7b1fa2; /* For browsers that do not support gradients */
+    background-image: linear-gradient(to bottom, #7b1fa2, #212121); /* Standard syntax (must be last) */
+}
