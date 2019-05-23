@@ -7,15 +7,24 @@ import LoginComponent from './components/LoginComponent';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import M from 'materialize-css'
 import './App.css'
+import SpinnerComponent from "./components/SpinnerComponent";
 
 class App extends Component {
-    state = {  };
+    state = {
+        loading: true,
+    };
     componentDidMount(){
-        M.AutoInit()
+        M.AutoInit();
+        setTimeout(() => {
+            this.setState({
+                loading: false,
+            })
+        }, 1000)
     }
     render() {
         return (
             <Router>
+                <SpinnerComponent isLoading={this.state.loading}/>
                 <div>
                     <Switch>
                         <Route exact path='/' component={Main} />
