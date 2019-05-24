@@ -1,8 +1,44 @@
+/*.main-background-grad-1 {*/
+    /*height: 100vh;*/
+    /*background-image: linear-gradient(to bottom, #FE6518, #DB09A0); !* Standard syntax (must be last) *!*/
+    /*z-index: 1*/
+/*}*/
+
+
+
 .main-background-grad-1 {
+    position: relative;
     height: 100vh;
-    background-color:  	#FE6518; /* For browsers that do not support gradients */
-    background-image: linear-gradient(to bottom, #FE6518, #DB09A0); /* Standard syntax (must be last) */
+    background-image: linear-gradient(
+            to bottom,
+            #FE6518,
+            #DB09A0
+    );
+    z-index: 1;
 }
+
+.main-background-grad-1::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: linear-gradient(
+            to bottom,
+            #191919,
+            #7b1fa2
+    );
+    z-index: -1;
+    transition: opacity 0.5s linear;
+    opacity: 0;
+}
+.main-background-grad-1-hover::before {
+    opacity: 1;
+}
+
+
+
 .main-background-grad-2 {
     height: 100vh;
     background-color: #DB09A0; /* For browsers that do not support gradients */

@@ -69,11 +69,11 @@ a:nth-child(5){
     width:55%;height:55%;
     left:22.5%; top:22.5%;
     border-radius:50vmin;
-    box-shadow:0 0 0 5vmin #E3DFD2;
+    box-shadow:0 0 0 5vmin rgba(0, 0, 0, 0);
     transform:scale(1);
 }
 a:nth-child(5) div{
-    background-image: url('https://farm4.staticflickr.com/3766/12953056854_b8cdf14f21.jpg');
+    background-image: url('../resources/menu_home.png');
 }
 span{
     position:relative;
