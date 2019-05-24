@@ -42,9 +42,13 @@ class Main extends Component {
         }, 500)
     };
 
-    firstMenuHandler = (e) => {
+    menuOverHandler = (e) => {
         console.log('HELLO', e);
         this.changeColors();
+    };
+
+    resetBackgroundMenuHandler = () => {
+        document.getElementsByClassName('main-background-grad-1')[0].classList.remove('main-background-grad-1-hover');
     };
 
     render() {
@@ -52,7 +56,8 @@ class Main extends Component {
             <div>
                 <HomeMenu positionX={this.state.coordX} positionY={this.state.coordY} active={this.state.activeMenu}
                           resetMenuHandler={this.resetMenuHandler}
-                          firstMenuHandler={this.firstMenuHandler}/>
+                          menuOverHandler={this.menuOverHandler}
+                          resetBackgroundMenuHandler={this.resetBackgroundMenuHandler}/>
                 <div onClick={this.showCoords.bind(this)}>
                     <div className={"center"} style={{position: "absolute", bottom: "10px", left: "90vh", float: "left", zIndex: 2}}>
                     <img src={mouse_left} style={{width: "50px"}} />
