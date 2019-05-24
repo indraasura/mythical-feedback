@@ -29,9 +29,14 @@ class Main extends Component {
         })
     }
 
-    changeColors() {
+    changeColors(name) {
         console.log('Changing');
-        document.getElementsByClassName('main-background-grad-1')[0].classList.add('main-background-grad-1-hover');
+        document.getElementsByClassName('main-background-grad')[0].classList.remove('grad-1');
+        document.getElementsByClassName('main-background-grad')[0].classList.remove('grad-2');
+        document.getElementsByClassName('main-background-grad')[0].classList.remove('grad-3');
+        document.getElementsByClassName('main-background-grad')[0].classList.remove('grad-4');
+        document.getElementsByClassName('main-background-grad')[0].classList.add('main-background-grad-hover');
+        document.getElementsByClassName('main-background-grad')[0].classList.add(name);
     }
 
     resetMenuHandler = () => {
@@ -44,11 +49,11 @@ class Main extends Component {
 
     menuOverHandler = (e) => {
         console.log('HELLO', e);
-        this.changeColors();
+        this.changeColors(e);
     };
 
-    resetBackgroundMenuHandler = () => {
-        document.getElementsByClassName('main-background-grad-1')[0].classList.remove('main-background-grad-1-hover');
+    resetBackgroundMenuHandler = (e) => {
+        document.getElementsByClassName('main-background-grad')[0].classList.remove('main-background-grad-hover');
     };
 
     render() {
@@ -73,7 +78,7 @@ class Main extends Component {
                     {/*</ul>*/}
                     {/*</div>*/}
                     {/*</nav>*/}
-                    <div className={"main-background-grad-1"}>
+                    <div className={"main-background-grad"}>
                     </div>
                     {/*<div className={"main-background-grad-2"}></div>*/}
                     {/*<div className={"main-background-grad-3"}></div>*/}
