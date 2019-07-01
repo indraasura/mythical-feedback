@@ -14,10 +14,10 @@ class HomeMenu extends Component {
 
     render() {
         return (
-            <div>
+            <div className={"wrap2"} style={{left: this.props.positionX,
+                top: this.props.positionY, zIndex: 2}}>
                 {(this.props.active) ?
-                    <div className="wrap" style={{position: "fixed", left: this.props.positionX-240,
-                        top: this.props.positionY-240, zIndex: 2}} onMouseLeave={this.props.resetMenuHandler}>
+                    <div className="wrap" style={{position: "relative", left: "-35vmin", top: "-40vmin"}} onMouseLeave={this.props.resetMenuHandler}>
                         <a>
                             <div onMouseOver={this.props.menuOverHandler.bind(this, 'grad-1')} onMouseOut={this.props.resetBackgroundMenuHandler.bind(this, 'grad-1')}>
 

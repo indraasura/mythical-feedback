@@ -20,11 +20,10 @@ class Main extends Component {
 
 
     showCoords(e) {
-        console.log(e.clientX);
-        console.log(e.clientY);
+        console.log(window.innerWidth, window.innerHeight, e.clientX, e.clientY);
         this.setState({
-            coordX: e.clientX - 13,
-            coordY: e.clientY - 13,
+            coordX: (e.clientX - 13),
+            coordY: (e.clientY - 13),
             activeMenu: true
         })
     }
@@ -64,10 +63,10 @@ class Main extends Component {
                           menuOverHandler={this.menuOverHandler}
                           resetBackgroundMenuHandler={this.resetBackgroundMenuHandler}/>
                 <div onClick={this.showCoords.bind(this)}>
-                    <div className={"center"} style={{position: "absolute", bottom: "10px", left: "90vh", float: "left", zIndex: 2}}>
-                    <img src={mouse_left} style={{width: "50px"}} />
-                        <div className={"white-text"} style={{fontSize: "12px"}}><i>Click Anywhere to Navigate</i></div>
-                    </div>
+                    {/*<div className={"center"} style={{position: "absolute", bottom: "10px", left: "90vh", float: "left", zIndex: 2}}>*/}
+                    {/*<img src={mouse_left} style={{width: "50px"}} />*/}
+                        {/*<div className={"white-text"} style={{fontSize: "12px"}}><i>Click Anywhere to Navigate</i></div>*/}
+                    {/*</div>*/}
                     {/*<nav className = "nav-bg">*/}
                     {/*<div className="nav-wrapper">*/}
                     {/*<ul id="nav-mobile" className="right hide-on-med-and-down">*/}
