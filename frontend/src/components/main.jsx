@@ -5,24 +5,39 @@ import M from 'materialize-css'
 import './main.css';
 import HomeMenu from "./HomeMenu";
 import mouse_left from '../resources/mouse_left.png';
+import mobile_touch from '../resources/mobile_touch.png';
+import { isMobile } from "react-device-detect";
 
 class Main extends Component {
     state = {
         coordX: 0,
         coordY: 0,
+        helperImage: mouse_left,
         activeMenu: false,
         homeMenuName: {
             'grad-0': 'Home',
             'grad-1': 'About',
-            'grad-2': 'Applications',
-            'grad-3': 'How it Works',
-            'grad-4': 'Technologies',
+            'grad-2': 'How it works',
+            'grad-3': 'Technologies used',
+            'grad-4': 'About me',
         }
     };
 
+    componentWillMount() {
+        if (isMobile) {
+            this.setState({
+                helperImage: mobile_touch
+            });
+        } else {
+            this.setState({
+                helperImage: mouse_left
+            });
+        }
+    }
+
     componentDidMount() {
         // document.getElementsByClassName('main-loading-screen')[0].style.visibility = 'hidden';
-        M.AutoInit()
+        M.AutoInit();
     }
 
 
@@ -93,10 +108,9 @@ class Main extends Component {
                           menuOverHandler={this.menuOverHandler}
                           resetBackgroundMenuHandler={this.resetBackgroundMenuHandler}/>
                 <div onClick={this.showCoords.bind(this)}>
-                    {/*<div className={"center"} style={{position: "absolute", bottom: "10px", left: "90vh", float: "left", zIndex: 2}}>*/}
-                    {/*<img src={mouse_left} style={{width: "50px"}} />*/}
-                        {/*<div className={"white-text"} style={{fontSize: "12px"}}><i>Click Anywhere to Navigate</i></div>*/}
-                    {/*</div>*/}
+                    <div style={{position: "fixed", bottom: "0", zIndex: 2}}>
+                      <img src={this.state.helperImage} style={{width: "20vh"}} />
+                    </div>
                     {/*<nav className = "nav-bg">*/}
                     {/*<div className="nav-wrapper">*/}
                     {/*<ul id="nav-mobile" className="right hide-on-med-and-down">*/}
