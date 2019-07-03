@@ -1,0 +1,4 @@
+.sidenav-overlay {
+    -webkit-transition: opacity 0.1s; /* For Safari 3.1 to 6.0 */
+    transition: opacity 0.1s;
+}

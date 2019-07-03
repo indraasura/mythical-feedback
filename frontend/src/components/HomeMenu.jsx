@@ -39,7 +39,7 @@ class HomeMenu extends Component {
                             </div>
                         </a>
                         <a href="#">
-                            <div>
+                            <div onMouseOver={this.props.menuOverHandler.bind(this, 'grad-0')} onMouseOut={this.props.resetBackgroundMenuHandler.bind(this, 'grad-0')}>
                             </div>
                         </a>
                     </div> : <div></div>}

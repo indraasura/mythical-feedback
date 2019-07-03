@@ -11,6 +11,13 @@ class Main extends Component {
         coordX: 0,
         coordY: 0,
         activeMenu: false,
+        homeMenuName: {
+            'grad-0': 'Home',
+            'grad-1': 'About',
+            'grad-2': 'Applications',
+            'grad-3': 'How it Works',
+            'grad-4': 'Technologies',
+        }
     };
 
     componentDidMount() {
@@ -22,14 +29,34 @@ class Main extends Component {
     showCoords(e) {
         console.log(window.innerWidth, window.innerHeight, e.clientX, e.clientY);
         this.setState({
+            // left: "-35vmin", top: "-40vmin"
             coordX: (e.clientX - 13),
             coordY: (e.clientY - 13),
             activeMenu: true
         })
     }
 
+    vh(v) {
+        var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        return (v * h) / 100;
+    }
+
+    vw(v) {
+        var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        return (v * w) / 100;
+    }
+
+    vmin(v) {
+        return Math.min(this.vh(v), this.vw(v));
+    }
+
+    vmax(v) {
+        return Math.max(this.vh(v), this.vw(v));
+    }
+
     changeColors(name) {
         console.log('Changing');
+        document.getElementsByClassName('main-background-grad')[0].classList.remove('grad-0');
         document.getElementsByClassName('main-background-grad')[0].classList.remove('grad-1');
         document.getElementsByClassName('main-background-grad')[0].classList.remove('grad-2');
         document.getElementsByClassName('main-background-grad')[0].classList.remove('grad-3');
@@ -39,15 +66,18 @@ class Main extends Component {
     }
 
     resetMenuHandler = () => {
+        M.Toast.dismissAll();
         setTimeout(() => {
             this.setState({
                 activeMenu: false,
-            })
+            });
         }, 500)
     };
 
     menuOverHandler = (e) => {
         console.log('HELLO', e);
+        M.Toast.dismissAll();
+        M.toast({html: this.state.homeMenuName[e]}, 1000);
         this.changeColors(e);
     };
 

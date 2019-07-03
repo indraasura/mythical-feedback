@@ -11,22 +11,30 @@ import SpinnerComponent from "./components/SpinnerComponent";
 
 class App extends Component {
     state = {
-        loading: true,
+        opacity: 1,
+        loading: true
     };
 
     componentDidMount() {
         M.AutoInit();
         setTimeout(() => {
             this.setState({
+                opacity: 0,
+            })
+        }, 1000);
+        setTimeout(() => {
+            this.setState({
                 loading: false,
             })
-        }, 1000)
+        }, 1100);
     }
 
     render() {
         return (
             <div>
-                <SpinnerComponent isLoading={this.state.loading}/>
+                <div>
+                    <SpinnerComponent isLoading={this.state.loading} opacity={this.state.opacity}/>
+                </div>
                 <Router>
                     <div>
                         <Switch>
