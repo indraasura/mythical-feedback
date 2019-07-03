@@ -18,6 +18,7 @@
     transform:scale(0.2) translatez(0px);
     opacity:0;
     transition:transform .5s, opacity .5s;
+    cursor: pointer;
 }
 a{
     position:absolute;

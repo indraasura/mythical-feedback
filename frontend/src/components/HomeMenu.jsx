@@ -19,7 +19,9 @@ class HomeMenu extends Component {
                 {(this.props.active) ?
                     <div className="wrap" style={{position: "relative", left: "-35vmin", top: "-40vmin"}} onMouseLeave={this.props.resetMenuHandler}>
                         <a>
-                            <div onMouseOver={this.props.menuOverHandler.bind(this, 'grad-1')} onMouseOut={this.props.resetBackgroundMenuHandler.bind(this, 'grad-1')}>
+                            <div onMouseOver={this.props.menuOverHandler.bind(this, 'grad-1')}
+                                 onMouseOut={this.props.resetBackgroundMenuHandler.bind(this, 'grad-1')}
+                                 onClick={() => {this.props.clickHandler('grad-1')}}>
 
                             </div>
                         </a>
@@ -39,7 +41,7 @@ class HomeMenu extends Component {
                             </div>
                         </a>
                         <a href="#">
-                            <div onMouseOver={this.props.menuOverHandler.bind(this, 'grad-0')} onMouseOut={this.props.resetBackgroundMenuHandler.bind(this, 'grad-0')}>
+                            <div>
                             </div>
                         </a>
                     </div> : <div></div>}

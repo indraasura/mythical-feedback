@@ -100,13 +100,19 @@ class Main extends Component {
         document.getElementsByClassName('main-background-grad')[0].classList.remove('main-background-grad-hover');
     };
 
+    clickHandler = (e) => {
+        console.log(e);
+        this.resetMenuHandler();
+    };
+
     render() {
         return (
             <div>
                 <HomeMenu positionX={this.state.coordX} positionY={this.state.coordY} active={this.state.activeMenu}
                           resetMenuHandler={this.resetMenuHandler}
                           menuOverHandler={this.menuOverHandler}
-                          resetBackgroundMenuHandler={this.resetBackgroundMenuHandler}/>
+                          resetBackgroundMenuHandler={this.resetBackgroundMenuHandler}
+                          clickHandler={this.clickHandler}/>
                 <div onClick={this.showCoords.bind(this)}>
                     <div style={{position: "fixed", bottom: "0", zIndex: 2}}>
                       <img src={this.state.helperImage} style={{width: "20vh"}} />
