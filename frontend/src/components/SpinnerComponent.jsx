@@ -14,7 +14,8 @@ class SpinnerComponent extends Component {
             (this.props.isLoading) ?
                 <div className={"sidenav-overlay"} id="main-loading-screen"
                      style={{display: "block", zIndex: 6, backgroundColor: "white", opacity: this.props.opacity}}>
-                    <img src={fire_load_large} style={{display: "block", margin: "auto", marginTop: "0"}}/>
+                    <img src={fire_load_large} style={{display: "block", margin: "auto", marginTop: "25vh", width: "100vw",
+                    maxWidth: "500px"}}/>
                 </div>
                 :<div></div>
 

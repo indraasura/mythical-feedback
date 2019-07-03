@@ -12,7 +12,7 @@ import SpinnerComponent from "./components/SpinnerComponent";
 class App extends Component {
     state = {
         opacity: 1,
-        loading: false
+        loading: true
     };
 
     componentDidMount() {
