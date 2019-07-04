@@ -32,6 +32,7 @@ import links_gif from '../resources/links.gif';
 import rename_gif from '../resources/rename.gif';
 import generate_gif from '../resources/generate.gif';
 import fire_load from '../resources/fire_load_small.gif';
+import mythical_image from '../resources/mythical.png';
 
 
 // TODO: Share toast on generation
@@ -106,7 +107,7 @@ class ScriptBuilder extends React.Component {
             accountSid: account_sid || '',
             authToken: auth_token || '',
             fromPhoneNumber: from_phone_number || '',
-        })
+        });
 
         const helper_slider = localStorage.getItem("helper_slider");
         if (!helper_slider) {
@@ -776,7 +777,7 @@ class ScriptBuilder extends React.Component {
                                     <div className={"col s12"}>
                                         <img style={{display: "block", margin: "auto", marginTop: "10%"}}
                                              src={fire_load}
-                                             onLoad={this.imageLoadHandler.bind(this,'https://imgur.com/wOOWWqm.png')}
+                                             onLoad={this.imageLoadHandler.bind(this, mythical_image)}
                                              alt={"MythFeed Logo"}/>
                                     </div>
                                 </div>

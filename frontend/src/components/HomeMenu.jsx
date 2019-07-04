@@ -18,29 +18,29 @@ class HomeMenu extends Component {
                 top: this.props.positionY, zIndex: 3}}>
                 {(this.props.active) ?
                     <div className="wrap" style={{position: "relative", left: "-35vmin", top: "-40vmin"}} onMouseLeave={this.props.resetMenuHandler}>
-                        <a>
+                        <a className={"home-menu"}>
                             <div onMouseOver={this.props.menuOverHandler.bind(this, 'grad-1')}
                                  onMouseOut={this.props.resetBackgroundMenuHandler.bind(this, 'grad-1')}
                                  onClick={() => {this.props.clickHandler('grad-1')}}>
 
                             </div>
                         </a>
-                        <a href="#">
+                        <a className={"home-menu"} href="#">
                             <div onMouseOver={this.props.menuOverHandler.bind(this, 'grad-2')} onMouseOut={this.props.resetBackgroundMenuHandler.bind(this, 'grad-2')}>
 
                             </div>
                         </a>
-                        <a href="#">
+                        <a className={"home-menu"} href="#">
                             <div onMouseOver={this.props.menuOverHandler.bind(this, 'grad-3')} onMouseOut={this.props.resetBackgroundMenuHandler.bind(this, 'grad-3')}>
 
                             </div>
                         </a>
-                        <a href="#">
+                        <a className={"home-menu"} href="#">
                             <div onMouseOver={this.props.menuOverHandler.bind(this, 'grad-4')} onMouseOut={this.props.resetBackgroundMenuHandler.bind(this, 'grad-4')}>
 
                             </div>
                         </a>
-                        <a href="#">
+                        <a className={"home-menu"} href="#">
                             <div>
                             </div>
                         </a>

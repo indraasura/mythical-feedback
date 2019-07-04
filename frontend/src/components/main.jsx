@@ -109,7 +109,7 @@ class Main extends Component {
 
     render() {
         return (
-            <div onClick={this.showCoords.bind(this)}>
+            <div>
                 <HomeMenu positionX={this.state.coordX} positionY={this.state.coordY} active={this.state.activeMenu}
                           resetMenuHandler={this.resetMenuHandler}
                           menuOverHandler={this.menuOverHandler}
@@ -117,28 +117,30 @@ class Main extends Component {
                           clickHandler={this.clickHandler}/>
                 {/*<div className={"center-image"} style={{position: "absolute", zIndex: 2}}>*/}
                 {/*</div>*/}
-                <div className={"bg"} style={{zIndex: 2}}>
-                </div>
-                <div>
-                    <div style={{position: "fixed", bottom: "0", zIndex: 2}}>
-                        <img src={this.state.helperImage} style={{width: "20vh"}}/>
+                <div onClick={this.showCoords.bind(this)}>
+                    <div className={"bg"} style={{zIndex: 2}}>
                     </div>
-                    {/*<nav className = "nav-bg">*/}
-                    {/*<div className="nav-wrapper">*/}
-                    {/*<ul id="nav-mobile" className="right hide-on-med-and-down">*/}
-                    {/*<li><Link to={'/'}>Home</Link></li>*/}
-                    {/*<li><Link to={'/excel'}>View Sheet</Link></li>*/}
-                    {/*<li><Link to={'/script-builder'}>Script Builder</Link></li>*/}
-                    {/*<li><Link to={'/contact'}>Contact Us</Link></li>*/}
-                    {/*</ul>*/}
-                    {/*</div>*/}
-                    {/*</nav>*/}
-                    <div className={"main-background-grad"}>
-                    </div>
-                    {/*<div className={"main-background-grad-2"}></div>*/}
-                    {/*<div className={"main-background-grad-3"}></div>*/}
-                    {/*<FileUpload/>*/}
+                    <div>
+                        <div style={{position: "fixed", bottom: "0", zIndex: 2}}>
+                            <img src={this.state.helperImage} style={{width: "20vh"}}/>
+                        </div>
+                        {/*<nav className = "nav-bg">*/}
+                        {/*<div className="nav-wrapper">*/}
+                        {/*<ul id="nav-mobile" className="right hide-on-med-and-down">*/}
+                        {/*<li><Link to={'/'}>Home</Link></li>*/}
+                        {/*<li><Link to={'/excel'}>View Sheet</Link></li>*/}
+                        {/*<li><Link to={'/script-builder'}>Script Builder</Link></li>*/}
+                        {/*<li><Link to={'/contact'}>Contact Us</Link></li>*/}
+                        {/*</ul>*/}
+                        {/*</div>*/}
+                        {/*</nav>*/}
+                        <div className={"main-background-grad"}>
+                        </div>
+                        {/*<div className={"main-background-grad-2"}></div>*/}
+                        {/*<div className={"main-background-grad-3"}></div>*/}
+                        {/*<FileUpload/>*/}
 
+                    </div>
                 </div>
             </div>
         );

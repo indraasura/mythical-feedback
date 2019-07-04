@@ -20,7 +20,7 @@
     transition:transform .5s, opacity .5s;
     cursor: pointer;
 }
-a{
+a.home-menu{
     position:absolute;
     left:0; top:0;
     width:47.5%; height:47.5%;
@@ -28,59 +28,59 @@ a{
     transform:scale(.5) translateZ(0px);
     background:#585247;
 }
-a div{
+a.home-menu div{
     height:100%;
     background-size:cover;
     opacity:.5;
     transition:opacity .5s;
     border-radius:inherit;
 }
-a:nth-child(1){
+a.home-menu:nth-child(1){
     border-radius:40vmin 0 0 0;
     transform-origin: 110% 110%;
     transition:transform .4s .15s;
 }
-a:nth-child(1) div{
+a.home-menu:nth-child(1) div{
     background-image:url('../resources/menu_home.png');
 }
-a:nth-child(2){
+a.home-menu:nth-child(2){
     border-radius:0 40vmin 0 0;
     left:52.5%;
     transform-origin: -10% 110%;
     transition:transform .4s .2s;
 }
-a:nth-child(2) div{
+a.home-menu:nth-child(2) div{
     background-image:url('../resources/menu_home.png');
 }
-a:nth-child(3){
+a.home-menu:nth-child(3){
     border-radius:0 0 0 40vmin;
     top:52.5%;
     transform-origin: 110% -10%;
     transition:transform .4s .25s;
 }
-a:nth-child(3) div{
+a.home-menu:nth-child(3) div{
     background-image:url('../resources/menu_home.png');
 }
-a:nth-child(4){
+a.home-menu:nth-child(4){
     border-radius:0 0 40vmin 0;
     top:52.5%; left:52.5%;
     transform-origin: -10% -10%;
     transition:transform .4s .3s;
 }
-a:nth-child(4) div{
+a.home-menu:nth-child(4) div{
     background-image: url('../resources/menu_home.png');
 }
-a:nth-child(5){
+a.home-menu:nth-child(5){
     width:55%;height:55%;
     left:22.5%; top:22.5%;
     border-radius:50vmin;
     box-shadow:0 0 0 5vmin rgba(0, 0, 0, 0);
     transform:scale(1);
 }
-a:nth-child(5) div{
+a.home-menu:nth-child(5) div{
     background-image: url('../resources/menu_home.png');
 }
-span{
+span.home-menu{
     position:relative;
     display:block;
     margin:0 auto;
@@ -90,14 +90,14 @@ span{
     background:#585247;
     transform:translateZ(0px);
 }
-span span{
+span.home-menu span{
     position:absolute;
     width:60%;height:3px;
     background:#ACA696;
     left:20%; top:50%;
     border-radius:0;
 }
-span span:after, span span:before{
+span.home-menu span:after, span.home-menu span:before{
     content:'';
     position:absolute;
     left:0; top:-1.5vmin;
@@ -105,7 +105,7 @@ span span:after, span span:before{
     background:inherit;
     transform:scale(1) translatez(0px);
 }
-span span:after{
+span.home-menu span:after{
     top:1.5vmin;
 }
 span:hover + .wrap, .wrap:hover{
@@ -115,7 +115,7 @@ span:hover + .wrap, .wrap:hover{
 span:hover + .wrap a, .wrap:hover a{
     transform:scale(1) translatez(0px);
 }
-a:hover div{
+a.home-menu:hover div{
     opacity:1;
     transform:translatez(0px);
 }

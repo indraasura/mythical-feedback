@@ -6,6 +6,8 @@ import TrayItemWidget from './TrayItemWidget';
 import './sidenav.css';
 import {config} from '../resources/config';
 
+import mythical_image from '../resources/mythical.png';
+
 class Sidebar extends Component {
 
     state = {
@@ -117,7 +119,7 @@ class Sidebar extends Component {
                     <li className={"side-hover"}>
                         <button style={{height: "60px", marginLeft: "-2px"}} className={"more tooltipped"}
                                 data-position="right" data-tooltip="Home">
-                            <div><img style={{width: "50px"}} src={"https://imgur.com/wOOWWqm.png"} alt={"MythFeed Logo"}/></div>
+                            <div><img style={{width: "50px"}} src={mythical_image} alt={"MythFeed Logo"}/></div>
                         </button>
                     </li>
                     <li className={"side-hover"}>

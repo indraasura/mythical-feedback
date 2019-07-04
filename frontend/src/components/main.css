@@ -41,17 +41,6 @@
 .grad-4::before {
     background-image: linear-gradient(to bottom, #FE6518, #db4748); /* Standard syntax (must be last) */
 }
-#FE6518,
-#db4748
-.center-image {
-    background-image: url('../resources/home.png');
-    z-index: 6;
-    height: 100%;
-    width: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
 
 .bg {
     background: url('../resources/home.png') no-repeat center center fixed;
