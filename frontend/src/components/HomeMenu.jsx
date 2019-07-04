@@ -15,7 +15,7 @@ class HomeMenu extends Component {
     render() {
         return (
             <div className={"wrap2"} style={{left: this.props.positionX,
-                top: this.props.positionY, zIndex: 2}}>
+                top: this.props.positionY, zIndex: 3}}>
                 {(this.props.active) ?
                     <div className="wrap" style={{position: "relative", left: "-35vmin", top: "-40vmin"}} onMouseLeave={this.props.resetMenuHandler}>
                         <a>

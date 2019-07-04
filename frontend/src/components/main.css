@@ -3,8 +3,7 @@
     height: 100vh;
     background-image: linear-gradient(
             to bottom,
-            #FE6518,
-            #db4748
+            #550686, #212121
     );
     z-index: 1;
     transition: opacity 0.5s linear;
@@ -40,5 +39,24 @@
     background-image: linear-gradient(to bottom, #7b1fa2, #550686); /* Standard syntax (must be last) */
 }
 .grad-4::before {
-    background-image: linear-gradient(to bottom, #550686, #212121); /* Standard syntax (must be last) */
+    background-image: linear-gradient(to bottom, #FE6518, #db4748); /* Standard syntax (must be last) */
+}
+#FE6518,
+#db4748
+.center-image {
+    background-image: url('../resources/home.png');
+    z-index: 6;
+    height: 100%;
+    width: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.bg {
+    background: url('../resources/home.png') no-repeat center center fixed;
+    width: 100%;
+    height: 100%;
+    background-size: 50vmin;
+    position: absolute;
 }

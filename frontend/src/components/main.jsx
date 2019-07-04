@@ -6,7 +6,9 @@ import './main.css';
 import HomeMenu from "./HomeMenu";
 import mouse_left from '../resources/mouse_left.png';
 import mobile_touch from '../resources/mobile_touch.png';
-import { isMobile } from "react-device-detect";
+import {isMobile} from "react-device-detect";
+import home_image from "../resources/home.png";
+
 
 class Main extends Component {
     state = {
@@ -107,15 +109,19 @@ class Main extends Component {
 
     render() {
         return (
-            <div>
+            <div onClick={this.showCoords.bind(this)}>
                 <HomeMenu positionX={this.state.coordX} positionY={this.state.coordY} active={this.state.activeMenu}
                           resetMenuHandler={this.resetMenuHandler}
                           menuOverHandler={this.menuOverHandler}
                           resetBackgroundMenuHandler={this.resetBackgroundMenuHandler}
                           clickHandler={this.clickHandler}/>
-                <div onClick={this.showCoords.bind(this)}>
+                {/*<div className={"center-image"} style={{position: "absolute", zIndex: 2}}>*/}
+                {/*</div>*/}
+                <div className={"bg"} style={{zIndex: 2}}>
+                </div>
+                <div>
                     <div style={{position: "fixed", bottom: "0", zIndex: 2}}>
-                      <img src={this.state.helperImage} style={{width: "20vh"}} />
+                        <img src={this.state.helperImage} style={{width: "20vh"}}/>
                     </div>
                     {/*<nav className = "nav-bg">*/}
                     {/*<div className="nav-wrapper">*/}
